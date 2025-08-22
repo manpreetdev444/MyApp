@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "./pages/landing";
+import ProfileSetup from "./pages/profile-setup";
 import CoupleDashboard from "./pages/couple-dashboard";
 import VendorDashboard from "./pages/vendor-dashboard";
 import VendorProfile from "./pages/vendor-profile";
@@ -22,10 +23,15 @@ function Router() {
     );
   }
 
+  // Check if user needs to complete profile setup
+  const needsProfileSetup = isAuthenticated && user && !user.roleData;
+
   return (
     <Switch>
       {!isAuthenticated ? (
         <Route path="/" component={Landing} />
+      ) : needsProfileSetup ? (
+        <Route path="/" component={ProfileSetup} />
       ) : (
         <>
           {user?.role === 'couple' && <Route path="/" component={CoupleDashboard} />}
