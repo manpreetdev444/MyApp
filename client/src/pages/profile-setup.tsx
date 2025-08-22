@@ -70,7 +70,7 @@ export default function ProfileSetup() {
 
     // Check for required vendor fields
     if (selectedRole === 'vendor') {
-      if (!formData.businessName || !formData.category || !formData.description || !formData.businessEmail || !formData.country || !formData.state || !formData.city) {
+      if (!formData.businessName || !formData.category || !formData.description || !formData.country || !formData.state || !formData.city) {
         toast({
           title: "Missing Required Information",
           description: "Please fill in all required fields marked with *",
@@ -420,11 +420,10 @@ export default function ProfileSetup() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="businessEmail">Business Email *</Label>
+                    <Label htmlFor="businessEmail">Business Email</Label>
                     <Input
                       id="businessEmail"
                       type="email"
-                      required
                       value={formData.businessEmail}
                       onChange={(e) => handleInputChange('businessEmail', e.target.value)}
                       placeholder="business@example.com"
