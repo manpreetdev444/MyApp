@@ -7,61 +7,61 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(45, 20%, 96%);
-  --foreground: hsl(215, 25%, 27%);
-  --card: hsl(45, 20%, 98%);
-  --card-foreground: hsl(215, 25%, 27%);
-  --popover: hsl(45, 20%, 96%);
-  --popover-foreground: hsl(215, 25%, 27%);
-  --primary: hsl(340, 35%, 75%);
+  --background: hsl(0, 0%, 99%);
+  --foreground: hsl(215, 35%, 18%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(215, 35%, 18%);
+  --popover: hsl(0, 0%, 99%);
+  --popover-foreground: hsl(215, 35%, 18%);
+  --primary: hsl(340, 65%, 62%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(215, 25%, 27%);
+  --secondary: hsl(214, 70%, 58%);
   --secondary-foreground: hsl(0, 0%, 100%);
   --muted: hsl(240, 1.9608%, 90%);
-  --muted-foreground: hsl(215, 25%, 27%);
-  --accent: hsl(340, 40%, 95%);
-  --accent-foreground: hsl(340, 35%, 75%);
+  --muted-foreground: hsl(215, 35%, 18%);
+  --accent: hsl(340, 35%, 97%);
+  --accent-foreground: hsl(340, 65%, 62%);
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(340, 40%, 95%);
+  --border: hsl(340, 25%, 92%);
   --input: hsl(200, 23.0769%, 97.4510%);
-  --ring: hsl(340, 35%, 75%);
-  --chart-1: hsl(340, 35%, 75%);
+  --ring: hsl(340, 65%, 62%);
+  --chart-1: hsl(340, 65%, 62%);
   --chart-2: hsl(159.7826, 100%, 36.0784%);
   --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
   --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
   --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
-  --sidebar: hsl(45, 20%, 98%);
-  --sidebar-foreground: hsl(215, 25%, 27%);
-  --sidebar-primary: hsl(340, 35%, 75%);
+  --sidebar: hsl(0, 0%, 100%);
+  --sidebar-foreground: hsl(215, 35%, 18%);
+  --sidebar-primary: hsl(340, 65%, 62%);
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: hsl(340, 40%, 95%);
-  --sidebar-accent-foreground: hsl(340, 35%, 75%);
+  --sidebar-accent: hsl(340, 35%, 97%);
+  --sidebar-accent-foreground: hsl(340, 65%, 62%);
   --sidebar-border: hsl(205.0000, 25.0000%, 90.5882%);
-  --sidebar-ring: hsl(340, 35%, 75%);
+  --sidebar-ring: hsl(340, 65%, 62%);
   --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: 1.3rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 1px 2px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 1px 2px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 2px 4px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 4px 6px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 8px 10px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00);
+  --shadow-2xs: 0px 1px 2px 0px hsl(215, 20%, 50% / 0.08);
+  --shadow-xs: 0px 1px 3px 0px hsl(215, 20%, 50% / 0.1);
+  --shadow-sm: 0px 1px 2px 0px hsl(215, 20%, 50% / 0.05), 0px 1px 3px 0px hsl(215, 20%, 50% / 0.1);
+  --shadow: 0px 1px 3px 0px hsl(215, 20%, 50% / 0.1), 0px 1px 2px 0px hsl(215, 20%, 50% / 0.06);
+  --shadow-md: 0px 4px 6px -1px hsl(215, 20%, 50% / 0.1), 0px 2px 4px -1px hsl(215, 20%, 50% / 0.06);
+  --shadow-lg: 0px 10px 15px -3px hsl(215, 20%, 50% / 0.1), 0px 4px 6px -2px hsl(215, 20%, 50% / 0.05);
+  --shadow-xl: 0px 20px 25px -5px hsl(215, 20%, 50% / 0.1), 0px 10px 10px -5px hsl(215, 20%, 50% / 0.04);
+  --shadow-2xl: 0px 25px 50px -12px hsl(215, 20%, 50% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   
-  /* Wedding Color Palette */
-  --rose-gold: hsl(340, 35%, 75%);
-  --blush: hsl(340, 40%, 95%);
-  --sage: hsl(98, 20%, 68%);
-  --dusty-blue: hsl(214, 48%, 75%);
-  --champagne: hsl(42, 58%, 89%);
-  --warm-gray: hsl(45, 20%, 96%);
-  --charcoal: hsl(215, 25%, 27%);
+  /* Wedding Color Palette - Vibrant & Professional */
+  --rose-gold: hsl(340, 65%, 62%);
+  --blush: hsl(340, 35%, 97%);
+  --sage: hsl(120, 40%, 50%);
+  --dusty-blue: hsl(214, 70%, 58%);
+  --champagne: hsl(45, 80%, 70%);
+  --warm-gray: hsl(0, 0%, 98%);
+  --charcoal: hsl(215, 35%, 18%);
 }
 
 .dark {
@@ -71,7 +71,7 @@
   --card-foreground: hsl(0, 0%, 85.0980%);
   --popover: hsl(0, 0%, 0%);
   --popover-foreground: hsl(200, 6.6667%, 91.1765%);
-  --primary: hsl(340, 35%, 75%);
+  --primary: hsl(340, 65%, 62%);
   --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(195.0000, 15.3846%, 94.9020%);
   --secondary-foreground: hsl(215, 25%, 27%);
@@ -83,41 +83,41 @@
   --destructive-foreground: hsl(0, 0%, 100%);
   --border: hsl(210, 5.2632%, 14.9020%);
   --input: hsl(207.6923, 27.6596%, 18.4314%);
-  --ring: hsl(340, 35%, 75%);
-  --chart-1: hsl(340, 35%, 75%);
+  --ring: hsl(340, 65%, 62%);
+  --chart-1: hsl(340, 65%, 62%);
   --chart-2: hsl(159.7826, 100%, 36.0784%);
   --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
   --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
   --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
   --sidebar: hsl(228, 9.8039%, 10%);
   --sidebar-foreground: hsl(0, 0%, 85.0980%);
-  --sidebar-primary: hsl(340, 35%, 75%);
+  --sidebar-primary: hsl(340, 65%, 62%);
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
   --sidebar-accent: hsl(205.7143, 70%, 7.8431%);
   --sidebar-accent-foreground: hsl(340, 35%, 75%);
   --sidebar-border: hsl(205.7143, 15.7895%, 26.0784%);
-  --sidebar-ring: hsl(340, 35%, 75%);
+  --sidebar-ring: hsl(340, 65%, 62%);
   --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: 1.3rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 1px 2px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 1px 2px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 2px 4px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 4px 6px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00), 0px 8px 10px -1px hsl(340, 35%, 75% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(340, 35%, 75% / 0.00);
+  --shadow-2xs: 0px 1px 2px 0px hsl(215, 20%, 50% / 0.08);
+  --shadow-xs: 0px 1px 3px 0px hsl(215, 20%, 50% / 0.1);
+  --shadow-sm: 0px 1px 2px 0px hsl(215, 20%, 50% / 0.05), 0px 1px 3px 0px hsl(215, 20%, 50% / 0.1);
+  --shadow: 0px 1px 3px 0px hsl(215, 20%, 50% / 0.1), 0px 1px 2px 0px hsl(215, 20%, 50% / 0.06);
+  --shadow-md: 0px 4px 6px -1px hsl(215, 20%, 50% / 0.1), 0px 2px 4px -1px hsl(215, 20%, 50% / 0.06);
+  --shadow-lg: 0px 10px 15px -3px hsl(215, 20%, 50% / 0.1), 0px 4px 6px -2px hsl(215, 20%, 50% / 0.05);
+  --shadow-xl: 0px 20px 25px -5px hsl(215, 20%, 50% / 0.1), 0px 10px 10px -5px hsl(215, 20%, 50% / 0.04);
+  --shadow-2xl: 0px 25px 50px -12px hsl(215, 20%, 50% / 0.25);
   
   /* Wedding Color Palette - Dark Mode */
-  --rose-gold: hsl(340, 35%, 75%);
-  --blush: hsl(340, 40%, 15%);
-  --sage: hsl(98, 20%, 35%);
-  --dusty-blue: hsl(214, 48%, 45%);
-  --champagne: hsl(42, 58%, 35%);
-  --warm-gray: hsl(45, 20%, 10%);
-  --charcoal: hsl(215, 25%, 85%);
+  --rose-gold: hsl(340, 65%, 68%);
+  --blush: hsl(340, 25%, 12%);
+  --sage: hsl(120, 35%, 40%);
+  --dusty-blue: hsl(214, 60%, 55%);
+  --champagne: hsl(45, 70%, 65%);
+  --warm-gray: hsl(0, 0%, 8%);
+  --charcoal: hsl(215, 25%, 88%);
 }
 
 @layer base {
@@ -225,19 +225,19 @@
   }
   
   .hover\:bg-rose-gold\/90:hover {
-    background-color: hsl(340, 35%, 75% / 0.9);
+    background-color: hsl(340, 65%, 62% / 0.9);
   }
   
   .hover\:bg-sage\/90:hover {
-    background-color: hsl(98, 20%, 68% / 0.9);
+    background-color: hsl(120, 40%, 50% / 0.9);
   }
   
   .hover\:bg-dusty-blue\/90:hover {
-    background-color: hsl(214, 48%, 75% / 0.9);
+    background-color: hsl(214, 70%, 58% / 0.9);
   }
   
   .hover\:bg-champagne\/90:hover {
-    background-color: hsl(42, 58%, 89% / 0.9);
+    background-color: hsl(45, 80%, 70% / 0.9);
   }
   
   .hover\:text-rose-gold:hover {
@@ -245,7 +245,7 @@
   }
   
   .hover\:text-rose-gold\/80:hover {
-    color: hsl(340, 35%, 75% / 0.8);
+    color: hsl(340, 65%, 62% / 0.8);
   }
 }
 
@@ -268,5 +268,5 @@
 }
 
 .uppy-c-btn-primary:hover {
-  background-color: hsl(340, 35%, 70%) !important;
+  background-color: hsl(340, 65%, 56%) !important;
 }
