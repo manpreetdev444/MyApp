@@ -311,7 +311,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="bg-white/10 backdrop-blur text-white border-white/40 hover:bg-white/20 px-8 py-6 text-lg"
+                  className="bg-white/10 backdrop-blur text-white border-white/40 hover:bg-white/20 hover:text-white px-8 py-6 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-200"
                   data-testid="button-watch-video"
                 >
                   <Play className="mr-2 h-5 w-5" />
