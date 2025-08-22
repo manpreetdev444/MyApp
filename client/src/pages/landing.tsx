@@ -1,8 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, Calendar, DollarSign, Star, Search, Sparkles, Instagram, Facebook, Twitter, Mail, Play, ArrowRight, CheckCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Heart, Users, Calendar, DollarSign, Star, Search, Sparkles, Instagram, Facebook, Twitter, Mail, Play, ArrowRight, CheckCircle, UserPlus, LogIn } from "lucide-react";
+import { useState } from "react";
 
 export default function Landing() {
+  const [signUpOpen, setSignUpOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signUpData, setSignUpData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: ''
+  });
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement signup logic
+    console.log('SignUp:', signUpData);
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement login logic
+    console.log('Login:', loginData);
+  };
+
   return (
     <div className="min-h-screen bg-warm-gray">
       {/* Navigation */}
@@ -13,14 +45,194 @@ export default function Landing() {
               <h1 className="text-2xl font-playfair font-bold text-rose-gold">WedSimplify</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                className="text-charcoal hover:text-rose-gold"
-                onClick={() => window.location.href = '/api/login'}
-                data-testid="button-login"
-              >
-                Sign In
-              </Button>
+              <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="text-charcoal hover:text-rose-gold"
+                    data-testid="button-login"
+                  >
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-2xl font-playfair text-charcoal">Welcome Back</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <Input
+                        id="login-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={loginData.email}
+                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                        required
+                        data-testid="input-login-email"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Input
+                        id="login-password"
+                        type="password"
+                        placeholder="Enter your password"
+                        value={loginData.password}
+                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                        required
+                        data-testid="input-login-password"
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-rose-gold hover:bg-rose-gold/90 text-white"
+                      data-testid="button-submit-login"
+                    >
+                      Sign In
+                    </Button>
+                    <div className="text-center text-sm text-charcoal/60">
+                      Don't have an account?{' '}
+                      <button
+                        type="button"
+                        className="text-rose-gold hover:underline"
+                        onClick={() => {
+                          setLoginOpen(false);
+                          setSignUpOpen(true);
+                        }}
+                        data-testid="link-switch-to-signup"
+                      >
+                        Sign up
+                      </button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={signUpOpen} onOpenChange={setSignUpOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="bg-rose-gold hover:bg-rose-gold/90 text-white"
+                    data-testid="button-signup"
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Sign Up
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-2xl font-playfair text-charcoal">Join WedSimplify</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleSignUp} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-firstname">First Name</Label>
+                        <Input
+                          id="signup-firstname"
+                          placeholder="First name"
+                          value={signUpData.firstName}
+                          onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                          required
+                          data-testid="input-signup-firstname"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-lastname">Last Name</Label>
+                        <Input
+                          id="signup-lastname"
+                          placeholder="Last name"
+                          value={signUpData.lastName}
+                          onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                          required
+                          data-testid="input-signup-lastname"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={signUpData.email}
+                        onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
+                        required
+                        data-testid="input-signup-email"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-role">I am a...</Label>
+                      <Select 
+                        value={signUpData.role} 
+                        onValueChange={(value) => setSignUpData({ ...signUpData, role: value })}
+                        required
+                      >
+                        <SelectTrigger data-testid="select-signup-role">
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="couple">Couple planning a wedding</SelectItem>
+                          <SelectItem value="individual">Individual looking for services</SelectItem>
+                          <SelectItem value="vendor">Vendor/Service provider</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-password">Password</Label>
+                        <Input
+                          id="signup-password"
+                          type="password"
+                          placeholder="Create password"
+                          value={signUpData.password}
+                          onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                          required
+                          data-testid="input-signup-password"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-confirm-password">Confirm Password</Label>
+                        <Input
+                          id="signup-confirm-password"
+                          type="password"
+                          placeholder="Confirm password"
+                          value={signUpData.confirmPassword}
+                          onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
+                          required
+                          data-testid="input-signup-confirm-password"
+                        />
+                      </div>
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-rose-gold to-dusty-blue hover:from-rose-gold/90 hover:to-dusty-blue/90 text-white"
+                      data-testid="button-submit-signup"
+                    >
+                      Create Account
+                    </Button>
+                    
+                    <div className="text-center text-sm text-charcoal/60">
+                      Already have an account?{' '}
+                      <button
+                        type="button"
+                        className="text-rose-gold hover:underline"
+                        onClick={() => {
+                          setSignUpOpen(false);
+                          setLoginOpen(true);
+                        }}
+                        data-testid="link-switch-to-login"
+                      >
+                        Sign in
+                      </button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
