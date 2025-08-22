@@ -24,6 +24,7 @@ export default function ProfileSetup() {
     // Vendor fields
     businessName: '',
     category: '',
+    subcategory: '',
     description: '',
     phone: '',
     website: '',
@@ -69,6 +70,28 @@ export default function ProfileSetup() {
       return;
     }
 
+    // Check for required vendor fields
+    if (selectedRole === 'vendor') {
+      if (!formData.businessName || !formData.category || !formData.description || !formData.country || !formData.state || !formData.city) {
+        toast({
+          title: "Missing Required Information",
+          description: "Please fill in all required fields marked with *",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check if subcategory is required (all categories except "other")
+      if (formData.category !== 'other' && !formData.subcategory) {
+        toast({
+          title: "Missing Subcategory",
+          description: "Please select a subcategory for your business",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setupMutation.mutate({
       role: selectedRole,
       ...formData,
@@ -76,7 +99,73 @@ export default function ProfileSetup() {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      // If category changes, reset subcategory
+      if (field === 'category') {
+        return { ...prev, [field]: value, subcategory: '' };
+      }
+      return { ...prev, [field]: value };
+    });
+  };
+
+  // Subcategory options based on category
+  const subcategoryOptions: Record<string, string[]> = {
+    "venues-decor": [
+      "Banquet halls / wedding venues",
+      "Destination wedding venues", 
+      "Stage décor & backdrop designers",
+      "Floral decorators",
+      "Lighting & ambiance setup",
+      "Tent / marquee rentals",
+      "Other"
+    ],
+    "food-catering": [
+      "Traditional caterers",
+      "Multi-cuisine catering (fusion menus)",
+      "Street food/live station catering",
+      "Dessert vendors", 
+      "Wedding cake specialists",
+      "Bartending / mocktail services",
+      "Other"
+    ],
+    "photography-videography": [
+      "Wedding photographers (candid + traditional)",
+      "Cinematic videographers",
+      "Pre-wedding shoot specialists",
+      "Drone photography",
+      "Live streaming services",
+      "Other"
+    ],
+    "beauty-grooming": [
+      "Makeup artists",
+      "Henna artists",
+      "Hair stylists", 
+      "Groom styling",
+      "Nail & skincare specialists",
+      "Other"
+    ],
+    "dj-entertainment": [
+      "DJs",
+      "Live bands",
+      "Dance Performers",
+      "MCs / wedding hosts",
+      "Fireworks & special effects",
+      "Other"
+    ],
+    "clothing-jewelry": [
+      "Bridal clothing and tailors",
+      "Groom clothing and tailors",
+      "Custom jewelry designers",
+      "Rental jewelry providers",
+      "Accessories",
+      "Other"
+    ],
+    "wedding-planners": [
+      "Wedding planners / coordinators",
+      "Day-of coordinators",
+      "Destination wedding specialists",
+      "Other"
+    ]
   };
 
   return (
@@ -218,15 +307,37 @@ export default function ProfileSetup() {
                     className="w-full p-2 border border-input rounded-md"
                   >
                     <option value="">Select category</option>
-                    <option value="photography">Photography</option>
-                    <option value="catering">Catering</option>
-                    <option value="venue">Venue</option>
-                    <option value="music">Music & DJ</option>
-                    <option value="flowers">Flowers & Decoration</option>
-                    <option value="planning">Wedding Planning</option>
+                    <option value="venues-decor">Venues/Decor</option>
+                    <option value="food-catering">Food & Catering</option>
+                    <option value="photography-videography">Photography/Videography</option>
+                    <option value="beauty-grooming">Beauty & Grooming</option>
+                    <option value="dj-entertainment">DJ & Entertainment</option>
+                    <option value="clothing-jewelry">Clothing/Jewelry</option>
+                    <option value="wedding-planners">Wedding Planners</option>
                     <option value="other">Other</option>
                   </select>
                 </div>
+
+                {/* Subcategory - conditional */}
+                {formData.category && formData.category !== 'other' && (
+                  <div>
+                    <Label htmlFor="subcategory">Subcategory *</Label>
+                    <select
+                      id="subcategory"
+                      required
+                      value={formData.subcategory}
+                      onChange={(e) => handleInputChange('subcategory', e.target.value)}
+                      className="w-full p-2 border border-input rounded-md"
+                    >
+                      <option value="">Select subcategory</option>
+                      {subcategoryOptions[formData.category]?.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 
                 {/* Location Fields */}
                 <div className="space-y-4">
@@ -269,9 +380,10 @@ export default function ProfileSetup() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Business Description</Label>
+                  <Label htmlFor="description">Business Description *</Label>
                   <Textarea
                     id="description"
+                    required
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Tell us about your services..."
