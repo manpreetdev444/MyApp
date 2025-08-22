@@ -36,20 +36,20 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-warm-gray">
+    <div className="min-h-screen bg-charcoal">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b border-blush">
+      <nav className="bg-charcoal shadow-lg border-b border-charcoal/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-playfair font-bold text-rose-gold">WedSimplify</h1>
+              <h1 className="text-2xl font-playfair font-bold text-champagne">WedSimplify</h1>
             </div>
             <div className="flex items-center space-x-4">
               <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
                 <DialogTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="text-charcoal hover:text-rose-gold hover:bg-rose-gold/10 border border-rose-gold/20 hover:border-rose-gold/40 transition-all duration-200"
+                    className="text-champagne hover:text-rose-gold hover:bg-rose-gold/20 border border-champagne/30 hover:border-rose-gold/60 transition-all duration-200"
                     data-testid="button-login"
                   >
                     <LogIn className="mr-2 h-4 w-4" />
@@ -271,15 +271,15 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-r from-rose-gold to-dusty-blue overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+      <section className="relative min-h-screen bg-gradient-to-r from-charcoal via-rose-gold/20 to-charcoal overflow-hidden">
+        <div className="absolute inset-0 bg-black bg-opacity-70"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center" 
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=800')"
           }}
         ></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-rose-gold/30 to-dusty-blue/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 via-rose-gold/40 to-charcoal/80"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
@@ -301,7 +301,7 @@ export default function Landing() {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button 
                   size="lg" 
-                  className="bg-champagne text-charcoal hover:bg-champagne/90 px-10 py-6 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-200"
+                  className="bg-gradient-to-r from-rose-gold via-dusty-blue to-sage text-white hover:from-rose-gold/90 hover:via-dusty-blue/90 hover:to-sage/90 px-10 py-6 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-200"
                   onClick={() => window.location.href = '/api/login'}
                   data-testid="button-start-planning-hero"
                 >
@@ -311,7 +311,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="bg-white/10 backdrop-blur text-white border-white/40 hover:bg-white/20 hover:text-white px-8 py-6 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-200"
+                  className="bg-charcoal/30 backdrop-blur text-white border-rose-gold/50 hover:bg-charcoal/50 hover:text-white px-8 py-6 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-200"
                   data-testid="button-watch-video"
                 >
                   <Play className="mr-2 h-5 w-5" />
@@ -425,64 +425,65 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <section className="bg-gradient-to-b from-charcoal to-charcoal/95 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-charcoal mb-4">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-champagne mb-4">
             Everything You Need for Any Special Occasion
           </h2>
-          <p className="text-xl text-charcoal/70 max-w-3xl mx-auto">
+          <p className="text-xl text-white/80 max-w-3xl mx-auto">
             Whether you're a couple planning your wedding, an individual organizing a celebration, or a vendor looking to grow your business, 
             WedSimplify is your one-stop marketplace for all event services.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Card className="border-rose-gold/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-rose-gold/5" data-testid="card-vendor-discovery">
+          <Card className="border-rose-gold/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-charcoal/80 to-rose-gold/20" data-testid="card-vendor-discovery">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-rose-gold to-rose-gold/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Search className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Find Your Dream Team</h3>
-              <p className="text-charcoal/70 leading-relaxed">
+              <h3 className="text-2xl font-bold text-white mb-3 font-playfair">Find Your Dream Team</h3>
+              <p className="text-white/80 leading-relaxed">
                 💕 Discover handpicked vendors who'll bring your vision to life. From photographers who capture pure joy to caterers who create magic.
               </p>
               <div className="mt-4 text-rose-gold font-semibold">Browse 1,200+ vendors</div>
             </CardContent>
           </Card>
 
-          <Card className="border-sage/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-sage/5" data-testid="card-portfolio-showcase">
+          <Card className="border-sage/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-charcoal/80 to-sage/20" data-testid="card-portfolio-showcase">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-sage to-sage/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Showcase Excellence</h3>
-              <p className="text-charcoal/70 leading-relaxed">
+              <h3 className="text-2xl font-bold text-white mb-3 font-playfair">Showcase Excellence</h3>
+              <p className="text-white/80 leading-relaxed">
                 ✨ Vendors, let your artistry shine! Create stunning galleries that make couples fall in love with your work at first sight.
               </p>
               <div className="mt-4 text-sage font-semibold">Join 1,200+ professionals</div>
             </CardContent>
           </Card>
 
-          <Card className="border-dusty-blue/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-dusty-blue/5" data-testid="card-event-planning">
+          <Card className="border-dusty-blue/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-charcoal/80 to-dusty-blue/20" data-testid="card-event-planning">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-dusty-blue to-dusty-blue/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Calendar className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Plan Like a Pro</h3>
-              <p className="text-charcoal/70 leading-relaxed">
+              <h3 className="text-2xl font-bold text-white mb-3 font-playfair">Plan Like a Pro</h3>
+              <p className="text-white/80 leading-relaxed">
                 📅 Turn chaos into celebration! Our tools help you organize every precious moment, from first dance to final toast.
               </p>
               <div className="mt-4 text-dusty-blue font-semibold">Stay perfectly organized</div>
             </CardContent>
           </Card>
 
-          <Card className="border-champagne/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-champagne/5" data-testid="card-budget-tracking">
+          <Card className="border-champagne/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-charcoal/80 to-champagne/20" data-testid="card-budget-tracking">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-champagne to-champagne/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Budget Bliss</h3>
-              <p className="text-charcoal/70 leading-relaxed">
+              <h3 className="text-2xl font-bold text-white mb-3 font-playfair">Budget Bliss</h3>
+              <p className="text-white/80 leading-relaxed">
                 💰 Spend smart, celebrate more! Track every penny while ensuring your special day is everything you dreamed of.
               </p>
               <div className="mt-4 text-champagne font-semibold">Save an average $2,800</div>
@@ -491,11 +492,11 @@ export default function Landing() {
         </div>
 
         <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-rose-gold/10 to-dusty-blue/10 rounded-3xl p-12 mx-auto max-w-4xl border border-rose-gold/20">
-            <h3 className="text-3xl font-playfair font-bold text-charcoal mb-4">
+          <div className="bg-gradient-to-r from-charcoal/90 to-charcoal/80 rounded-3xl p-12 mx-auto max-w-4xl border border-rose-gold/40 shadow-2xl">
+            <h3 className="text-3xl font-playfair font-bold text-champagne mb-4">
               Ready to Create Something Beautiful?
             </h3>
-            <p className="text-xl text-charcoal/70 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
               Join thousands of happy couples, individuals, and vendors who've made their dreams come true with WedSimplify.
             </p>
             <Button 
@@ -508,8 +509,9 @@ export default function Landing() {
               Start Your Journey Today
               <ArrowRight className="ml-3 h-6 w-6" />
             </Button>
-            <p className="text-sm text-charcoal/60 mt-4">Free to join • No credit card required</p>
+            <p className="text-sm text-white/70 mt-4">Free to join • No credit card required</p>
           </div>
+        </div>
         </div>
       </section>
 
