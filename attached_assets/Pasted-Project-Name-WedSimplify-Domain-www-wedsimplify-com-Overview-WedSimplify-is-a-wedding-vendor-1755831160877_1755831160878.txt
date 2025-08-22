@@ -1,0 +1,65 @@
+Project Name: WedSimplify
+Domain: www.wedsimplify.com
+
+Overview:
+WedSimplify is a wedding vendor platform designed to simplify wedding planning for couples while providing vendors an easy way to showcase their services and manage bookings. The platform connects engaged couples with curated wedding vendors based on budget, style preferences, and availability. Our goal is to reduce the stress of wedding planning and provide an end-to-end seamless experience for both couples and vendors.
+
+Short-Term Vision (MVP):
+- Launch a functional web and mobile app that allows couples to find, compare, and book wedding vendors.
+- Enable vendors to create profiles, manage packages, receive inquiries, accept bookings, and showcase their work.
+- Include essential features like dashboards, messaging, budget tracker, wedding timeline, and payment integration for deposits.
+
+Long-Term Vision:
+- Scale to a full-featured wedding planning ecosystem with AI-assisted vendor recommendations, smart budgeting, planning automation, and analytics.
+- Introduce community features like reviews, forums, wedding inspiration boards, and vendor ratings.
+- Expand to offer additional event planning services beyond weddings.
+- Build a reliable, trusted brand in the wedding industry globally.
+
+End-to-End Flow:
+
+1. **Couple Flow (Consumers):**
+   - Signup / Login: Couples create an account with name, email, password, budget, and style preferences.
+   - Dashboard:
+     - Curated vendor suggestions based on budget and style.
+     - Compare vendor packages, view reviews, and send inquiries.
+     - View vendors’ showcased work (photos/videos from their social media or uploaded portfolio).
+     - Track all communications with vendors.
+     - Budget tracker: Add/edit items to see remaining budget.
+     - Wedding timeline: Preloaded planning milestones, editable.
+   - Booking: Send booking requests to vendors; deposits handled via Stripe.
+   - Messaging: Chat with vendors directly through the dashboard.
+   - Reviews: After the wedding, leave ratings and feedback on vendors.
+
+2. **Vendor Flow:**
+   - Signup / Login: Vendors create a profile with name, business name, email, password, service type, packages, and pricing.
+   - Dashboard:
+     - Manage availability with a calendar (block dates for booked events).
+     - Receive inquiries from couples and check their budget/preferences.
+     - Accept or decline bookings; send contracts and collect deposits via Stripe.
+     - Upload or link portfolio content to showcase their work (photos, videos, or social media links such as Instagram, YouTube, Pinterest).
+     - Review management: Request reviews post-event to build reputation.
+   - Vendor profile: Display packages, ratings, reviews, and showcased work to attract couples.
+
+Features to Highlight:
+- Role-based authentication (Couple vs Vendor)
+- MongoDB database for persistent storage
+- JWT-based authentication
+- React web app + React Native mobile app
+- Stripe integration for secure deposits
+- Tailwind CSS for web UI styling
+- Messaging system between couples and vendors
+- Budget tracker and wedding timeline for couples
+- Vendor suggestion engine based on couple profile
+- **Vendor Portfolio Showcase**: Allow vendors to upload work or link social media; couples can view it directly on vendor profiles
+
+Additional Notes:
+- The platform should be scalable to add more features over time.
+- The design should be simple, modern, and mobile-first.
+- Replit AI can generate full-stack code including backend, frontend, and mobile app components.
+- We have already purchased the domain www.wedsimplify.com, so deployment should eventually point to this domain.
+
+Goal for Replit:
+- Build a full-stack MVP with web and mobile apps.
+- Ensure core flows for both couples and vendors are functional.
+- Include the vendor portfolio showcase feature for couples to view.
+- Prepare the platform for deployment so we can launch and test with real users.
