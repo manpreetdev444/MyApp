@@ -511,7 +511,6 @@ export default function Landing() {
             <p className="text-sm text-charcoal/60 mt-4">Free to join • No credit card required</p>
           </div>
         </div>
-        </div>
       </section>
 
       {/* Footer */}
