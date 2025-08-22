@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 import { Heart, Briefcase, Plus, X } from "lucide-react";
 
 export default function ProfileSetup() {
@@ -15,9 +16,10 @@ export default function ProfileSetup() {
   const [socialMediaLinks, setSocialMediaLinks] = useState([{ platform: '', url: '' }]);
   const [formData, setFormData] = useState({
     // Couple fields
-    partnerName: '',
+    coupleName: '',
+    email: '',
     weddingDate: '',
-    budget: '',
+    budget: 25000,
     venue: '',
     guestCount: '',
     location: '',
@@ -68,8 +70,17 @@ export default function ProfileSetup() {
       return;
     }
 
-    // Check for required vendor fields
-    if (selectedRole === 'vendor') {
+    // Check for required fields based on role
+    if (selectedRole === 'couple') {
+      if (!formData.coupleName || !formData.email) {
+        toast({
+          title: "Missing Required Information",
+          description: "Please fill in all required fields marked with *",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else if (selectedRole === 'vendor') {
       if (!formData.businessName || !formData.category || !formData.description || !formData.country || !formData.state || !formData.city) {
         toast({
           title: "Missing Required Information",
@@ -97,7 +108,7 @@ export default function ProfileSetup() {
     });
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => {
       // If category changes, reset subcategory
       if (field === 'category') {
@@ -237,53 +248,78 @@ export default function ProfileSetup() {
 
             {/* Couple Fields */}
             {selectedRole === 'couple' && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-charcoal">Wedding Details</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="partnerName">Partner's Name</Label>
+                    <Label htmlFor="coupleName">What do we call you? *</Label>
                     <Input
-                      id="partnerName"
-                      value={formData.partnerName}
-                      onChange={(e) => handleInputChange('partnerName', e.target.value)}
-                      placeholder="Your partner's name"
+                      id="coupleName"
+                      required
+                      value={formData.coupleName}
+                      onChange={(e) => handleInputChange('coupleName', e.target.value)}
+                      placeholder="e.g., Sarah & John"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="weddingDate">Wedding Date</Label>
+                    <Label htmlFor="email">Email *</Label>
                     <Input
-                      id="weddingDate"
-                      type="date"
-                      value={formData.weddingDate}
-                      onChange={(e) => handleInputChange('weddingDate', e.target.value)}
+                      id="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="your@email.com"
                     />
                   </div>
                 </div>
+
+                <div>
+                  <Label htmlFor="weddingDate">Wedding Date</Label>
+                  <Input
+                    id="weddingDate"
+                    type="date"
+                    value={formData.weddingDate}
+                    onChange={(e) => handleInputChange('weddingDate', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="budget">Total Budget</Label>
-                    <Input
+                <div>
+                  <Label htmlFor="budget">Total Budget: ${formData.budget.toLocaleString()}</Label>
+                  <div className="mt-2">
+                    <Slider
                       id="budget"
-                      type="number"
-                      value={formData.budget}
-                      onChange={(e) => handleInputChange('budget', e.target.value)}
-                      placeholder="e.g., 25000"
+                      min={5000}
+                      max={100000}
+                      step={1000}
+                      value={[formData.budget]}
+                      onValueChange={(value) => handleInputChange('budget', value[0])}
+                      className="w-full"
                     />
+                    <div className="flex justify-between text-sm text-charcoal/60 mt-1">
+                      <span>$5K</span>
+                      <span>$100K</span>
+                    </div>
                   </div>
-                  
-                  <div>
-                    <Label htmlFor="guestCount">Guest Count</Label>
-                    <Input
-                      id="guestCount"
-                      type="number"
-                      value={formData.guestCount}
-                      onChange={(e) => handleInputChange('guestCount', e.target.value)}
-                      placeholder="e.g., 150"
-                    />
-                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="guestCount">Guest Count</Label>
+                  <select
+                    id="guestCount"
+                    value={formData.guestCount}
+                    onChange={(e) => handleInputChange('guestCount', e.target.value)}
+                    className="w-full p-2 border border-input rounded-md"
+                  >
+                    <option value="">Select guest count range</option>
+                    <option value="0-50">0 – 50 guests</option>
+                    <option value="50-150">50 – 150 guests</option>
+                    <option value="150-300">150 – 300 guests</option>
+                    <option value="300+">300+ guests</option>
+                  </select>
                 </div>
                 
                 <div>
@@ -292,8 +328,12 @@ export default function ProfileSetup() {
                     id="location"
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    placeholder="City, State"
+                    placeholder="Enter city, state or venue location"
+                    className="w-full"
                   />
+                  <p className="text-sm text-charcoal/60 mt-1">
+                    Enter the city, state, or specific venue where your wedding will take place
+                  </p>
                 </div>
               </div>
             )}
