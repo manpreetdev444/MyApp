@@ -28,6 +28,11 @@ export default function ProfileSetup() {
     phone: '',
     website: '',
     instagram: '',
+    facebook: '',
+    tiktok: '',
+    country: '',
+    state: '',
+    city: '',
   });
   
   const { toast } = useToast();
@@ -203,45 +208,73 @@ export default function ProfileSetup() {
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="category">Category *</Label>
-                    <select
-                      id="category"
-                      required
-                      value={formData.category}
-                      onChange={(e) => handleInputChange('category', e.target.value)}
-                      className="w-full p-2 border border-input rounded-md"
-                    >
-                      <option value="">Select category</option>
-                      <option value="photography">Photography</option>
-                      <option value="catering">Catering</option>
-                      <option value="venue">Venue</option>
-                      <option value="music">Music & DJ</option>
-                      <option value="flowers">Flowers & Decoration</option>
-                      <option value="planning">Wedding Planning</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="category">Category *</Label>
+                  <select
+                    id="category"
+                    required
+                    value={formData.category}
+                    onChange={(e) => handleInputChange('category', e.target.value)}
+                    className="w-full p-2 border border-input rounded-md"
+                  >
+                    <option value="">Select category</option>
+                    <option value="photography">Photography</option>
+                    <option value="catering">Catering</option>
+                    <option value="venue">Venue</option>
+                    <option value="music">Music & DJ</option>
+                    <option value="flowers">Flowers & Decoration</option>
+                    <option value="planning">Wedding Planning</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
                 
+                {/* Location Fields */}
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-charcoal">Business Location</h4>
+                  
+                  <div>
+                    <Label htmlFor="country">Country *</Label>
+                    <Input
+                      id="country"
+                      required
+                      value={formData.country}
+                      onChange={(e) => handleInputChange('country', e.target.value)}
+                      placeholder="e.g., United States"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="state">State/Province *</Label>
+                      <Input
+                        id="state"
+                        required
+                        value={formData.state}
+                        onChange={(e) => handleInputChange('state', e.target.value)}
+                        placeholder="e.g., California"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="city">City *</Label>
+                      <Input
+                        id="city"
+                        required
+                        value={formData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        placeholder="e.g., Los Angeles"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <Label htmlFor="description">Business Description</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Tell couples about your services..."
+                    placeholder="Tell us about your services..."
                     rows={3}
                   />
                 </div>
@@ -258,11 +291,48 @@ export default function ProfileSetup() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="instagram">Instagram</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input
-                      id="instagram"
-                      value={formData.instagram}
-                      onChange={(e) => handleInputChange('instagram', e.target.value)}
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
+                </div>
+
+                {/* Social Media Fields */}
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-charcoal">Social Media</h4>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="instagram">Instagram</Label>
+                      <Input
+                        id="instagram"
+                        value={formData.instagram}
+                        onChange={(e) => handleInputChange('instagram', e.target.value)}
+                        placeholder="@yourbusiness"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="facebook">Facebook</Label>
+                      <Input
+                        id="facebook"
+                        value={formData.facebook}
+                        onChange={(e) => handleInputChange('facebook', e.target.value)}
+                        placeholder="facebook.com/yourbusiness"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="tiktok">TikTok</Label>
+                    <Input
+                      id="tiktok"
+                      value={formData.tiktok}
+                      onChange={(e) => handleInputChange('tiktok', e.target.value)}
                       placeholder="@yourbusiness"
                     />
                   </div>
