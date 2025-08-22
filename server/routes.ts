@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
-import { insertVendorSchema, insertVendorPackageSchema, insertInquirySchema, insertBudgetItemSchema, insertTimelineItemSchema, insertCoupleSchema } from "@shared/schema";
+import { insertVendorSchema, insertVendorPackageSchema, insertInquirySchema, insertBudgetItemSchema, insertTimelineItemSchema, insertCoupleSchema, insertIndividualSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -27,6 +27,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         roleData = await storage.getCoupleByUserId(userId);
       } else if (user.role === 'vendor') {
         roleData = await storage.getVendorByUserId(userId);
+      } else if (user.role === 'individual') {
+        roleData = await storage.getIndividualByUserId(userId);
       }
 
       res.json({ ...user, roleData });
@@ -64,6 +66,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         const vendor = await storage.createVendor(vendorData);
         res.json({ success: true, profile: vendor });
+      } else if (role === 'individual') {
+        const individualData = insertIndividualSchema.parse({
+          userId,
+          ...profileData,
+        });
+        const individual = await storage.createIndividual(individualData);
+        res.json({ success: true, profile: individual });
       } else {
         res.status(400).json({ message: "Invalid role" });
       }

@@ -31,7 +31,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  role: varchar("role", { enum: ['couple', 'vendor'] }).notNull().default('couple'),
+  role: varchar("role", { enum: ['couple', 'vendor', 'individual'] }).notNull().default('couple'),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -136,10 +136,20 @@ export const timelineItems = pgTable("timeline_items", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Individuals table for individual users seeking services
+export const individuals = pgTable("individuals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  fullName: varchar("full_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one }) => ({
   couple: one(couples),
   vendor: one(vendors),
+  individual: one(individuals),
 }));
 
 export const couplesRelations = relations(couples, ({ one, many }) => ({
@@ -201,6 +211,13 @@ export const timelineItemsRelations = relations(timelineItems, ({ one }) => ({
   }),
 }));
 
+export const individualsRelations = relations(individuals, ({ one }) => ({
+  user: one(users, {
+    fields: [individuals.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -252,11 +269,18 @@ export const insertTimelineItemSchema = createInsertSchema(timelineItems).omit({
   updatedAt: true,
 });
 
+export const insertIndividualSchema = createInsertSchema(individuals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema> & { id: string };
 export type User = typeof users.$inferSelect;
 export type Couple = typeof couples.$inferSelect;
 export type Vendor = typeof vendors.$inferSelect;
+export type Individual = typeof individuals.$inferSelect;
 export type VendorPackage = typeof vendorPackages.$inferSelect;
 export type PortfolioItem = typeof portfolioItems.$inferSelect;
 export type Inquiry = typeof inquiries.$inferSelect;
@@ -265,6 +289,7 @@ export type TimelineItem = typeof timelineItems.$inferSelect;
 
 export type InsertCouple = z.infer<typeof insertCoupleSchema>;
 export type InsertVendor = z.infer<typeof insertVendorSchema>;
+export type InsertIndividual = z.infer<typeof insertIndividualSchema>;
 export type InsertVendorPackage = z.infer<typeof insertVendorPackageSchema>;
 export type InsertPortfolioItem = z.infer<typeof insertPortfolioItemSchema>;
 export type InsertInquiry = z.infer<typeof insertInquirySchema>;

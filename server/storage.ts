@@ -2,6 +2,7 @@ import {
   users,
   couples,
   vendors,
+  individuals,
   vendorPackages,
   portfolioItems,
   inquiries,
@@ -11,6 +12,7 @@ import {
   type UpsertUser,
   type Couple,
   type Vendor,
+  type Individual,
   type VendorPackage,
   type PortfolioItem,
   type Inquiry,
@@ -18,6 +20,7 @@ import {
   type TimelineItem,
   type InsertCouple,
   type InsertVendor,
+  type InsertIndividual,
   type InsertVendorPackage,
   type InsertPortfolioItem,
   type InsertInquiry,
@@ -36,6 +39,10 @@ export interface IStorage {
   getCoupleByUserId(userId: string): Promise<Couple | undefined>;
   createCouple(couple: InsertCouple): Promise<Couple>;
   updateCouple(coupleId: string, updates: Partial<InsertCouple>): Promise<Couple>;
+
+  // Individual operations
+  getIndividualByUserId(userId: string): Promise<Individual | undefined>;
+  createIndividual(individual: InsertIndividual): Promise<Individual>;
 
   // Vendor operations
   getVendorByUserId(userId: string): Promise<Vendor | undefined>;
@@ -120,6 +127,17 @@ export class DatabaseStorage implements IStorage {
       .where(eq(couples.id, coupleId))
       .returning();
     return couple;
+  }
+
+  // Individual operations
+  async getIndividualByUserId(userId: string): Promise<Individual | undefined> {
+    const [individual] = await db.select().from(individuals).where(eq(individuals.userId, userId));
+    return individual;
+  }
+
+  async createIndividual(individualData: InsertIndividual): Promise<Individual> {
+    const [individual] = await db.insert(individuals).values(individualData).returning();
+    return individual;
   }
 
   // Vendor operations
