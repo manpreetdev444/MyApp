@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, Users, Calendar, DollarSign, Star, Search, Sparkles, Instagram, Facebook, Twitter, Mail, Play, ArrowRight, CheckCircle, UserPlus, LogIn } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Landing() {
   const [signUpOpen, setSignUpOpen] = useState(false);
@@ -18,21 +18,66 @@ export default function Landing() {
     confirmPassword: '',
     role: ''
   });
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
-  });
+
+  // Handle post-authentication profile setup
+  useEffect(() => {
+    const handlePostAuth = async () => {
+      const pendingSignup = sessionStorage.getItem('pendingSignup');
+      if (pendingSignup) {
+        try {
+          const { role } = JSON.parse(pendingSignup);
+          
+          // Clear the pending signup
+          sessionStorage.removeItem('pendingSignup');
+          
+          // Check if user is authenticated
+          const userResponse = await fetch('/api/auth/user');
+          if (userResponse.ok) {
+            // Set up profile with selected role
+            const setupResponse = await fetch('/api/setup-profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ role })
+            });
+            
+            if (setupResponse.ok) {
+              // Redirect to dashboard or appropriate page
+              alert('Account created successfully! Welcome to WedSimplify!');
+              window.location.reload(); // Refresh to show authenticated state
+            }
+          }
+        } catch (error) {
+          console.error('Error setting up profile:', error);
+        }
+      }
+    };
+
+    handlePostAuth();
+  }, []);
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement signup logic
-    console.log('SignUp:', signUpData);
+    
+    // Validate required fields
+    if (!signUpData.firstName || !signUpData.lastName || !signUpData.email || !signUpData.role) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    // Store signup intent and role for after auth
+    sessionStorage.setItem('pendingSignup', JSON.stringify({
+      role: signUpData.role,
+      intent: 'signup'
+    }));
+    
+    // Redirect to Replit Auth
+    window.location.href = '/api/login';
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login:', loginData);
+    // Redirect to Replit Auth for login
+    window.location.href = '/api/login';
   };
 
   return (
@@ -66,41 +111,20 @@ export default function Landing() {
                       <p className="text-charcoal/60">Sign in to continue your journey</p>
                     </div>
                   </DialogHeader>
-                  <form onSubmit={handleLogin} className="space-y-6">
-                    <div className="space-y-3">
-                      <Label htmlFor="login-email" className="text-charcoal font-semibold">Email Address</Label>
-                      <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={loginData.email}
-                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                        required
-                        className="h-12 border-2 border-rose-gold/20 focus:border-rose-gold focus:ring-rose-gold/20 bg-white shadow-sm"
-                        data-testid="input-login-email"
-                      />
+                  <div className="space-y-6">
+                    <div className="text-center p-6">
+                      <p className="text-charcoal/80 mb-6 text-lg">
+                        Sign in to your WedSimplify account to continue planning your perfect event.
+                      </p>
+                      <Button 
+                        onClick={handleLogin} 
+                        className="w-full h-12 bg-gradient-to-r from-rose-gold to-dusty-blue hover:from-rose-gold/90 hover:to-dusty-blue/90 text-white font-semibold text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                        data-testid="button-submit-login"
+                      >
+                        <Heart className="mr-2 h-5 w-5" />
+                        Continue with Replit
+                      </Button>
                     </div>
-                    <div className="space-y-3">
-                      <Label htmlFor="login-password" className="text-charcoal font-semibold">Password</Label>
-                      <Input
-                        id="login-password"
-                        type="password"
-                        placeholder="Enter your password"
-                        value={loginData.password}
-                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                        required
-                        className="h-12 border-2 border-rose-gold/20 focus:border-rose-gold focus:ring-rose-gold/20 bg-white shadow-sm"
-                        data-testid="input-login-password"
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full h-12 bg-gradient-to-r from-rose-gold to-dusty-blue hover:from-rose-gold/90 hover:to-dusty-blue/90 text-white font-semibold text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-                      data-testid="button-submit-login"
-                    >
-                      <Heart className="mr-2 h-5 w-5" />
-                      Sign In
-                    </Button>
                     <div className="text-center p-4 bg-gradient-to-r from-blush/20 to-champagne/20 rounded-lg border border-rose-gold/10">
                       <p className="text-charcoal/70 text-sm">
                         Don't have an account?{' '}
@@ -117,7 +141,7 @@ export default function Landing() {
                         </button>
                       </p>
                     </div>
-                  </form>
+                  </div>
                 </DialogContent>
               </Dialog>
 
