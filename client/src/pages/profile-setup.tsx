@@ -27,13 +27,6 @@ export default function ProfileSetup() {
     // Individual fields
     fullName: '',
     individualEmail: '',
-    eventType: '',
-    eventDate: '',
-    individualBudget: '',
-    individualCurrency: 'USD',
-    individualGuestCount: '',
-    individualLocation: '',
-    servicesNeeded: [] as string[],
     
     // Vendor fields
     businessName: '',
@@ -92,7 +85,7 @@ export default function ProfileSetup() {
         return;
       }
     } else if (selectedRole === 'individual') {
-      if (!formData.fullName || !formData.individualEmail || !formData.eventType) {
+      if (!formData.fullName || !formData.individualEmail) {
         toast({
           title: "Missing Required Information",
           description: "Please fill in all required fields marked with *",
@@ -273,7 +266,7 @@ export default function ProfileSetup() {
                     <User className="w-5 h-5 text-dusty-blue" />
                     <div>
                       <div className="font-semibold">Individual</div>
-                      <div className="text-sm text-charcoal/70">Planning an event</div>
+                      <div className="text-sm text-charcoal/70">Seeking services</div>
                     </div>
                   </Label>
                 </div>
@@ -387,11 +380,11 @@ export default function ProfileSetup() {
             {/* Individual Fields */}
             {selectedRole === 'individual' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-charcoal">Event Details</h3>
+                <h3 className="text-lg font-semibold text-charcoal">Your Details</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Label htmlFor="fullName">Name *</Label>
                     <Input
                       id="fullName"
                       required
@@ -411,139 +404,6 @@ export default function ProfileSetup() {
                       onChange={(e) => handleInputChange('individualEmail', e.target.value)}
                       placeholder="your@email.com"
                     />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="eventType">Event Type *</Label>
-                    <select
-                      id="eventType"
-                      required
-                      value={formData.eventType}
-                      onChange={(e) => handleInputChange('eventType', e.target.value)}
-                      className="w-full p-2 border border-input rounded-md"
-                    >
-                      <option value="">Select event type</option>
-                      <option value="wedding">Wedding</option>
-                      <option value="engagement">Engagement Party</option>
-                      <option value="anniversary">Anniversary Celebration</option>
-                      <option value="birthday">Birthday Party</option>
-                      <option value="graduation">Graduation Party</option>
-                      <option value="corporate">Corporate Event</option>
-                      <option value="baby-shower">Baby Shower</option>
-                      <option value="bridal-shower">Bridal Shower</option>
-                      <option value="holiday">Holiday Party</option>
-                      <option value="other">Other Special Event</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="eventDate">Event Date</Label>
-                    <Input
-                      id="eventDate"
-                      type="date"
-                      min={new Date().toISOString().split('T')[0]}
-                      value={formData.eventDate}
-                      onChange={(e) => handleInputChange('eventDate', e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="individualBudget">Total Budget</Label>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Input
-                        id="individualBudget"
-                        type="number"
-                        min="0"
-                        value={formData.individualBudget}
-                        onChange={(e) => handleInputChange('individualBudget', e.target.value)}
-                        placeholder="Enter your budget amount"
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="w-24">
-                      <select
-                        value={formData.individualCurrency}
-                        onChange={(e) => handleInputChange('individualCurrency', e.target.value)}
-                        className="w-full p-2 border border-input rounded-md h-10"
-                      >
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                        <option value="GBP">GBP</option>
-                        <option value="CAD">CAD</option>
-                        <option value="AUD">AUD</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="individualGuestCount">Expected Guest Count</Label>
-                  <select
-                    id="individualGuestCount"
-                    value={formData.individualGuestCount}
-                    onChange={(e) => handleInputChange('individualGuestCount', e.target.value)}
-                    className="w-full p-2 border border-input rounded-md"
-                  >
-                    <option value="">Select guest count range</option>
-                    <option value="0-25">0 – 25 guests</option>
-                    <option value="25-50">25 – 50 guests</option>
-                    <option value="50-100">50 – 100 guests</option>
-                    <option value="100-200">100 – 200 guests</option>
-                    <option value="200+">200+ guests</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="individualLocation">Event Location</Label>
-                  <Input
-                    id="individualLocation"
-                    value={formData.individualLocation}
-                    onChange={(e) => handleInputChange('individualLocation', e.target.value)}
-                    placeholder="Enter city, state or venue location"
-                    className="w-full"
-                  />
-                  <p className="text-sm text-charcoal/60 mt-1">
-                    Enter where your event will take place
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-base font-semibold text-charcoal mb-3 block">
-                    What services do you need? (Select all that apply)
-                  </Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      'Photography', 'Videography', 'Catering', 'Venue', 
-                      'DJ/Music', 'Flowers/Decor', 'Cake/Desserts', 'Planning/Coordination',
-                      'Beauty/Hair', 'Transportation', 'Entertainment', 'Other'
-                    ].map((service) => (
-                      <label key={service} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.servicesNeeded.includes(service)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFormData(prev => ({
-                                ...prev,
-                                servicesNeeded: [...prev.servicesNeeded, service]
-                              }));
-                            } else {
-                              setFormData(prev => ({
-                                ...prev,
-                                servicesNeeded: prev.servicesNeeded.filter(s => s !== service)
-                              }));
-                            }
-                          }}
-                          className="rounded"
-                        />
-                        <span className="text-sm">{service}</span>
-                      </label>
-                    ))}
                   </div>
                 </div>
               </div>
