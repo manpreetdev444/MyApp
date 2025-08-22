@@ -8,6 +8,7 @@ import Landing from "./pages/landing";
 import ProfileSetup from "./pages/profile-setup";
 import CoupleDashboard from "./pages/couple-dashboard";
 import VendorDashboard from "./pages/vendor-dashboard";
+import IndividualDashboard from "./pages/individual-dashboard";
 import VendorProfile from "./pages/vendor-profile";
 import VendorBrowse from "./pages/vendor-browse";
 import NotFound from "./pages/not-found";
@@ -36,6 +37,7 @@ function Router() {
         <>
           {user?.role === 'couple' && <Route path="/" component={CoupleDashboard} />}
           {user?.role === 'vendor' && <Route path="/" component={VendorDashboard} />}
+          {user?.role === 'individual' && <Route path="/" component={IndividualDashboard} />}
           <Route path="/vendors" component={VendorBrowse} />
           <Route path="/vendor/:vendorId" component={VendorProfile} />
         </>
