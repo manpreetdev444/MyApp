@@ -101,7 +101,7 @@ export default function Landing() {
                           <Heart className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <div className="text-white font-semibold">Sarah & Mike</div>
+                          <div className="text-white font-semibold">Emily & James</div>
                           <div className="text-white/70 text-sm">Perfect wedding!</div>
                         </div>
                       </div>
@@ -142,7 +142,7 @@ export default function Landing() {
                           <Star className="w-5 h-5 text-charcoal" />
                         </div>
                         <div>
-                          <div className="text-white font-semibold">Emma & Alex</div>
+                          <div className="text-white font-semibold">Sophia & Ryan</div>
                           <div className="text-white/70 text-sm">Engagement party</div>
                         </div>
                       </div>
