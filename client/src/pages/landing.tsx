@@ -49,20 +49,26 @@ export default function Landing() {
                 <DialogTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="text-charcoal hover:text-rose-gold"
+                    className="text-charcoal hover:text-rose-gold hover:bg-rose-gold/10 border border-rose-gold/20 hover:border-rose-gold/40 transition-all duration-200"
                     data-testid="button-login"
                   >
                     <LogIn className="mr-2 h-4 w-4" />
                     Sign In
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md bg-gradient-to-br from-white to-rose-gold/5 border border-rose-gold/20">
                   <DialogHeader>
-                    <DialogTitle className="text-center text-2xl font-playfair text-charcoal">Welcome Back</DialogTitle>
+                    <div className="text-center mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-r from-rose-gold to-dusty-blue rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <LogIn className="w-8 h-8 text-white" />
+                      </div>
+                      <DialogTitle className="text-3xl font-playfair text-charcoal mb-2">Welcome Back</DialogTitle>
+                      <p className="text-charcoal/60">Sign in to continue your journey</p>
+                    </div>
                   </DialogHeader>
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
+                  <form onSubmit={handleLogin} className="space-y-6">
+                    <div className="space-y-3">
+                      <Label htmlFor="login-email" className="text-charcoal font-semibold">Email Address</Label>
                       <Input
                         id="login-email"
                         type="email"
@@ -70,11 +76,12 @@ export default function Landing() {
                         value={loginData.email}
                         onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                         required
+                        className="h-12 border-2 border-rose-gold/20 focus:border-rose-gold focus:ring-rose-gold/20 bg-white shadow-sm"
                         data-testid="input-login-email"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="login-password" className="text-charcoal font-semibold">Password</Label>
                       <Input
                         id="login-password"
                         type="password"
@@ -82,29 +89,33 @@ export default function Landing() {
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         required
+                        className="h-12 border-2 border-rose-gold/20 focus:border-rose-gold focus:ring-rose-gold/20 bg-white shadow-sm"
                         data-testid="input-login-password"
                       />
                     </div>
                     <Button 
                       type="submit" 
-                      className="w-full bg-rose-gold hover:bg-rose-gold/90 text-white"
+                      className="w-full h-12 bg-gradient-to-r from-rose-gold to-dusty-blue hover:from-rose-gold/90 hover:to-dusty-blue/90 text-white font-semibold text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
                       data-testid="button-submit-login"
                     >
+                      <Heart className="mr-2 h-5 w-5" />
                       Sign In
                     </Button>
-                    <div className="text-center text-sm text-charcoal/60">
-                      Don't have an account?{' '}
-                      <button
-                        type="button"
-                        className="text-rose-gold hover:underline"
-                        onClick={() => {
-                          setLoginOpen(false);
-                          setSignUpOpen(true);
-                        }}
-                        data-testid="link-switch-to-signup"
-                      >
-                        Sign up
-                      </button>
+                    <div className="text-center p-4 bg-gradient-to-r from-blush/20 to-champagne/20 rounded-lg border border-rose-gold/10">
+                      <p className="text-charcoal/70 text-sm">
+                        Don't have an account?{' '}
+                        <button
+                          type="button"
+                          className="text-rose-gold hover:text-dusty-blue font-semibold hover:underline transition-colors"
+                          onClick={() => {
+                            setLoginOpen(false);
+                            setSignUpOpen(true);
+                          }}
+                          data-testid="link-switch-to-signup"
+                        >
+                          Create your account →
+                        </button>
+                      </p>
                     </div>
                   </form>
                 </DialogContent>
@@ -113,77 +124,92 @@ export default function Landing() {
               <Dialog open={signUpOpen} onOpenChange={setSignUpOpen}>
                 <DialogTrigger asChild>
                   <Button 
-                    className="bg-rose-gold hover:bg-rose-gold/90 text-white"
+                    className="bg-gradient-to-r from-dusty-blue to-sage hover:from-dusty-blue/90 hover:to-sage/90 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"
                     data-testid="button-signup"
                   >
                     <UserPlus className="mr-2 h-4 w-4" />
                     Sign Up
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white via-champagne/5 to-dusty-blue/5 border border-dusty-blue/20 max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle className="text-center text-2xl font-playfair text-charcoal">Join WedSimplify</DialogTitle>
+                    <div className="text-center mb-6">
+                      <div className="w-20 h-20 bg-gradient-to-r from-dusty-blue via-rose-gold to-sage rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+                        <UserPlus className="w-10 h-10 text-white" />
+                      </div>
+                      <DialogTitle className="text-3xl font-playfair text-charcoal mb-2">Join WedSimplify</DialogTitle>
+                      <p className="text-charcoal/60">Start your journey to unforgettable moments</p>
+                    </div>
                   </DialogHeader>
-                  <form onSubmit={handleSignUp} className="space-y-4">
+                  <form onSubmit={handleSignUp} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-firstname">First Name</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="signup-firstname" className="text-charcoal font-semibold">First Name</Label>
                         <Input
                           id="signup-firstname"
                           placeholder="First name"
                           value={signUpData.firstName}
                           onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
                           required
+                          className="h-11 border-2 border-dusty-blue/20 focus:border-dusty-blue focus:ring-dusty-blue/20 bg-white shadow-sm"
                           data-testid="input-signup-firstname"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-lastname">Last Name</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="signup-lastname" className="text-charcoal font-semibold">Last Name</Label>
                         <Input
                           id="signup-lastname"
                           placeholder="Last name"
                           value={signUpData.lastName}
                           onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
                           required
+                          className="h-11 border-2 border-dusty-blue/20 focus:border-dusty-blue focus:ring-dusty-blue/20 bg-white shadow-sm"
                           data-testid="input-signup-lastname"
                         />
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="signup-email" className="text-charcoal font-semibold">Email Address</Label>
                       <Input
                         id="signup-email"
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="Enter your email address"
                         value={signUpData.email}
                         onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                         required
+                        className="h-11 border-2 border-sage/20 focus:border-sage focus:ring-sage/20 bg-white shadow-sm"
                         data-testid="input-signup-email"
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-role">I am a...</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="signup-role" className="text-charcoal font-semibold">I am a...</Label>
                       <Select 
                         value={signUpData.role} 
                         onValueChange={(value) => setSignUpData({ ...signUpData, role: value })}
                         required
                       >
-                        <SelectTrigger data-testid="select-signup-role">
-                          <SelectValue placeholder="Select your role" />
+                        <SelectTrigger className="h-11 border-2 border-champagne/20 focus:border-champagne focus:ring-champagne/20 bg-white shadow-sm" data-testid="select-signup-role">
+                          <SelectValue placeholder="Choose what describes you best" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="couple">Couple planning a wedding</SelectItem>
-                          <SelectItem value="individual">Individual looking for services</SelectItem>
-                          <SelectItem value="vendor">Vendor/Service provider</SelectItem>
+                        <SelectContent className="bg-white border-2 border-champagne/20">
+                          <SelectItem value="couple" className="focus:bg-rose-gold/10 focus:text-rose-gold">
+                            💕 Couple planning a wedding
+                          </SelectItem>
+                          <SelectItem value="individual" className="focus:bg-dusty-blue/10 focus:text-dusty-blue">
+                            🎉 Individual looking for services
+                          </SelectItem>
+                          <SelectItem value="vendor" className="focus:bg-sage/10 focus:text-sage">
+                            ✨ Vendor/Service provider
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-password">Password</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="signup-password" className="text-charcoal font-semibold">Password</Label>
                         <Input
                           id="signup-password"
                           type="password"
@@ -191,11 +217,12 @@ export default function Landing() {
                           value={signUpData.password}
                           onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                           required
+                          className="h-11 border-2 border-rose-gold/20 focus:border-rose-gold focus:ring-rose-gold/20 bg-white shadow-sm"
                           data-testid="input-signup-password"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-confirm-password">Confirm Password</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="signup-confirm-password" className="text-charcoal font-semibold">Confirm Password</Label>
                         <Input
                           id="signup-confirm-password"
                           type="password"
@@ -203,6 +230,7 @@ export default function Landing() {
                           value={signUpData.confirmPassword}
                           onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                           required
+                          className="h-11 border-2 border-rose-gold/20 focus:border-rose-gold focus:ring-rose-gold/20 bg-white shadow-sm"
                           data-testid="input-signup-confirm-password"
                         />
                       </div>
@@ -210,25 +238,29 @@ export default function Landing() {
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-to-r from-rose-gold to-dusty-blue hover:from-rose-gold/90 hover:to-dusty-blue/90 text-white"
+                      className="w-full h-12 bg-gradient-to-r from-sage via-dusty-blue to-rose-gold hover:from-sage/90 hover:via-dusty-blue/90 hover:to-rose-gold/90 text-white font-bold text-lg shadow-xl transform hover:scale-105 transition-all duration-200"
                       data-testid="button-submit-signup"
                     >
-                      Create Account
+                      <Sparkles className="mr-2 h-6 w-6" />
+                      Create My Account
+                      <ArrowRight className="ml-2 h-6 w-6" />
                     </Button>
                     
-                    <div className="text-center text-sm text-charcoal/60">
-                      Already have an account?{' '}
-                      <button
-                        type="button"
-                        className="text-rose-gold hover:underline"
-                        onClick={() => {
-                          setSignUpOpen(false);
-                          setLoginOpen(true);
-                        }}
-                        data-testid="link-switch-to-login"
-                      >
-                        Sign in
-                      </button>
+                    <div className="text-center p-4 bg-gradient-to-r from-sage/10 via-dusty-blue/10 to-rose-gold/10 rounded-lg border border-dusty-blue/20">
+                      <p className="text-charcoal/70 text-sm">
+                        Already have an account?{' '}
+                        <button
+                          type="button"
+                          className="text-dusty-blue hover:text-rose-gold font-semibold hover:underline transition-colors"
+                          onClick={() => {
+                            setSignUpOpen(false);
+                            setLoginOpen(true);
+                          }}
+                          data-testid="link-switch-to-login"
+                        >
+                          Sign in here →
+                        </button>
+                      </p>
                     </div>
                   </form>
                 </DialogContent>
