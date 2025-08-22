@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Heart, Briefcase } from "lucide-react";
+import { Heart, Briefcase, Plus, X } from "lucide-react";
 
 export default function ProfileSetup() {
   const [selectedRole, setSelectedRole] = useState<'couple' | 'vendor' | ''>('');
+  const [socialMediaLinks, setSocialMediaLinks] = useState([{ platform: '', url: '' }]);
   const [formData, setFormData] = useState({
     // Couple fields
     partnerName: '',
@@ -26,11 +27,8 @@ export default function ProfileSetup() {
     category: '',
     subcategory: '',
     description: '',
-    phone: '',
+    businessEmail: '',
     website: '',
-    instagram: '',
-    facebook: '',
-    tiktok: '',
     country: '',
     state: '',
     city: '',
@@ -72,7 +70,7 @@ export default function ProfileSetup() {
 
     // Check for required vendor fields
     if (selectedRole === 'vendor') {
-      if (!formData.businessName || !formData.category || !formData.description || !formData.country || !formData.state || !formData.city) {
+      if (!formData.businessName || !formData.category || !formData.description || !formData.businessEmail || !formData.country || !formData.state || !formData.city) {
         toast({
           title: "Missing Required Information",
           description: "Please fill in all required fields marked with *",
@@ -95,6 +93,7 @@ export default function ProfileSetup() {
     setupMutation.mutate({
       role: selectedRole,
       ...formData,
+      socialMediaLinks: socialMediaLinks.filter(link => link.platform && link.url),
     });
   };
 
@@ -106,6 +105,24 @@ export default function ProfileSetup() {
       }
       return { ...prev, [field]: value };
     });
+  };
+
+  const handleSocialMediaChange = (index: number, field: 'platform' | 'url', value: string) => {
+    setSocialMediaLinks(prev => 
+      prev.map((link, i) => 
+        i === index ? { ...link, [field]: value } : link
+      )
+    );
+  };
+
+  const addSocialMediaLink = () => {
+    setSocialMediaLinks(prev => [...prev, { platform: '', url: '' }]);
+  };
+
+  const removeSocialMediaLink = (index: number) => {
+    if (socialMediaLinks.length > 1) {
+      setSocialMediaLinks(prev => prev.filter((_, i) => i !== index));
+    }
   };
 
   // Subcategory options based on category
@@ -403,51 +420,77 @@ export default function ProfileSetup() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="businessEmail">Business Email *</Label>
                     <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="(555) 123-4567"
+                      id="businessEmail"
+                      type="email"
+                      required
+                      value={formData.businessEmail}
+                      onChange={(e) => handleInputChange('businessEmail', e.target.value)}
+                      placeholder="business@example.com"
                     />
                   </div>
                 </div>
 
                 {/* Social Media Fields */}
                 <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-charcoal">Social Media</h4>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="instagram">Instagram</Label>
-                      <Input
-                        id="instagram"
-                        value={formData.instagram}
-                        onChange={(e) => handleInputChange('instagram', e.target.value)}
-                        placeholder="@yourbusiness"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="facebook">Facebook</Label>
-                      <Input
-                        id="facebook"
-                        value={formData.facebook}
-                        onChange={(e) => handleInputChange('facebook', e.target.value)}
-                        placeholder="facebook.com/yourbusiness"
-                      />
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-md font-semibold text-charcoal">Social Media</h4>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addSocialMediaLink}
+                      className="text-rose-gold border-rose-gold hover:bg-rose-gold/10"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Platform
+                    </Button>
                   </div>
                   
-                  <div>
-                    <Label htmlFor="tiktok">TikTok</Label>
-                    <Input
-                      id="tiktok"
-                      value={formData.tiktok}
-                      onChange={(e) => handleInputChange('tiktok', e.target.value)}
-                      placeholder="@yourbusiness"
-                    />
-                  </div>
+                  {socialMediaLinks.map((link, index) => (
+                    <div key={index} className="flex gap-2 items-end">
+                      <div className="flex-1">
+                        <Label>Platform</Label>
+                        <select
+                          value={link.platform}
+                          onChange={(e) => handleSocialMediaChange(index, 'platform', e.target.value)}
+                          className="w-full p-2 border border-input rounded-md"
+                        >
+                          <option value="">Select platform</option>
+                          <option value="instagram">Instagram</option>
+                          <option value="facebook">Facebook</option>
+                          <option value="tiktok">TikTok</option>
+                        </select>
+                      </div>
+                      
+                      <div className="flex-2">
+                        <Label>Profile URL</Label>
+                        <Input
+                          value={link.url}
+                          onChange={(e) => handleSocialMediaChange(index, 'url', e.target.value)}
+                          placeholder={
+                            link.platform === 'instagram' ? '@yourbusiness' :
+                            link.platform === 'facebook' ? 'facebook.com/yourbusiness' :
+                            link.platform === 'tiktok' ? '@yourbusiness' :
+                            'Enter profile URL'
+                          }
+                        />
+                      </div>
+                      
+                      {socialMediaLinks.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeSocialMediaLink(index)}
+                          className="text-red-500 border-red-300 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
