@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider";
 import { Heart, Briefcase, Plus, X } from "lucide-react";
 
 export default function ProfileSetup() {
@@ -19,7 +18,8 @@ export default function ProfileSetup() {
     coupleName: '',
     email: '',
     weddingDate: '',
-    budget: 25000,
+    budget: '',
+    currency: 'USD',
     venue: '',
     guestCount: '',
     location: '',
@@ -112,7 +112,7 @@ export default function ProfileSetup() {
     setFormData(prev => {
       // If category changes, reset subcategory
       if (field === 'category') {
-        return { ...prev, [field]: value, subcategory: '' };
+        return { ...prev, [field]: value as string, subcategory: '' };
       }
       return { ...prev, [field]: value };
     });
@@ -215,7 +215,7 @@ export default function ProfileSetup() {
               <Label className="text-base font-semibold text-charcoal mb-4 block">
                 I am a...
               </Label>
-              <RadioGroup value={selectedRole} onValueChange={setSelectedRole} className="grid grid-cols-2 gap-4">
+              <RadioGroup value={selectedRole} onValueChange={(value: string) => setSelectedRole(value as 'couple' | 'vendor' | '')} className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="couple" id="couple" />
                   <Label 
@@ -259,7 +259,7 @@ export default function ProfileSetup() {
                       required
                       value={formData.coupleName}
                       onChange={(e) => handleInputChange('coupleName', e.target.value)}
-                      placeholder="e.g., Sarah & John"
+                      placeholder="e.g., Emma & David"
                     />
                   </div>
                   
@@ -281,6 +281,7 @@ export default function ProfileSetup() {
                   <Input
                     id="weddingDate"
                     type="date"
+                    min={new Date().toISOString().split('T')[0]}
                     value={formData.weddingDate}
                     onChange={(e) => handleInputChange('weddingDate', e.target.value)}
                     className="w-full"
@@ -288,20 +289,31 @@ export default function ProfileSetup() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="budget">Total Budget: ${formData.budget.toLocaleString()}</Label>
-                  <div className="mt-2">
-                    <Slider
-                      id="budget"
-                      min={5000}
-                      max={100000}
-                      step={1000}
-                      value={[formData.budget]}
-                      onValueChange={(value) => handleInputChange('budget', value[0])}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-sm text-charcoal/60 mt-1">
-                      <span>$5K</span>
-                      <span>$100K</span>
+                  <Label htmlFor="budget">Total Budget</Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        id="budget"
+                        type="number"
+                        min="0"
+                        value={formData.budget}
+                        onChange={(e) => handleInputChange('budget', e.target.value)}
+                        placeholder="Enter your budget amount"
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="w-24">
+                      <select
+                        value={formData.currency}
+                        onChange={(e) => handleInputChange('currency', e.target.value)}
+                        className="w-full p-2 border border-input rounded-md h-10"
+                      >
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="CAD">CAD</option>
+                        <option value="AUD">AUD</option>
+                      </select>
                     </div>
                   </div>
                 </div>
