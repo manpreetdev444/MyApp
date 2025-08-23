@@ -1,0 +1,72 @@
+Replit Prompt (Final Draft)
+
+You are an expert full-stack developer.
+I have a web application with major issues in the sign-up and login flow. I want you to fix these bugs, implement proper authentication, and enforce password rules. Please carefully read and apply all of the following requirements:
+
+Current Bugs
+
+After sign-up, both consumers and vendors are being redirected to the consumer dashboard, regardless of their role.
+
+Fix: If the user is a consumer, redirect to the consumer dashboard. If the user is a vendor, redirect to the vendor dashboard.
+
+I can log in with any random email, even if it was never registered.
+
+Fix: Login must only succeed if the account actually exists in the database.
+
+I can log in with a wrong password.
+
+Fix: Login must validate the entered password against the stored (hashed) password. Reject incorrect logins.
+
+On the sign-up form, the user can complete sign-up even if the password and confirm password fields are different.
+
+Fix: Prevent registration if password !== confirmPassword.
+
+New Password Rules
+
+All user accounts (consumer and vendor) must have secure passwords:
+
+Minimum 8 characters
+
+At least 1 uppercase letter
+
+At least 1 special character (e.g., !@#$%^&*)
+
+If a password does not meet these rules, block registration and show a clear error message.
+
+Authentication Rules
+
+Only authenticated users should be able to sign in and access dashboard routes.
+
+Implement session-based or JWT-based authentication (you decide, but it must be secure and standard).
+
+Hash all stored passwords (e.g., with bcrypt). Never store plain text passwords.
+
+Protect vendor and consumer dashboard routes:
+
+A consumer cannot access vendor pages.
+
+A vendor cannot access consumer pages.
+
+Additional Fixes (Use Intelligence)
+
+Add server-side validation for email format during sign-up.
+
+Prevent duplicate email registration (unique email per account).
+
+On failed login attempts, return a clear error (e.g., "Invalid email or password").
+
+On successful login, return only safe user data (never include password in response).
+
+Make sure sessions/tokens expire after a reasonable time (e.g., 24h).
+
+Deliverables
+
+Fixed sign-up and login routes.
+
+Password validation logic (with rules above).
+
+Authentication middleware (for route protection).
+
+Redirection logic after login (consumer → consumer dashboard, vendor → vendor dashboard).
+
+Clean, modular, and well-commented code so I can understand what was fixed.
