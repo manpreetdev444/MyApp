@@ -80,7 +80,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Vendor routes
+  // 1. /api/vendors - Vendor CRUD operations
+  // GET all vendors with filters for consumer search
   app.get('/api/vendors', async (req, res) => {
     try {
       const { category, location, search, minPrice, maxPrice } = req.query;
@@ -100,6 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GET single vendor by ID
   app.get('/api/vendors/:vendorId', async (req, res) => {
     try {
       const { vendorId } = req.params;
@@ -123,7 +125,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/vendors/profile', isAuthenticated, async (req: any, res) => {
+  // POST create vendor profile (when vendor updates profile)
+  app.post('/api/vendors', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      
+      // Check if vendor already exists
+      const existingVendor = await storage.getVendorByUserId(userId);
+      if (existingVendor) {
+        return res.status(409).json({ message: "Vendor profile already exists" });
+      }
+
+      const vendorData = insertVendorSchema.parse({
+        ...req.body,
+        userId,
+      });
+      
+      const vendor = await storage.createVendor(vendorData);
+      res.json(vendor);
+    } catch (error) {
+      console.error("Error creating vendor:", error);
+      res.status(500).json({ message: "Failed to create vendor profile" });
+    }
+  });
+
+  // PUT update vendor profile
+  app.put('/api/vendors', isAuthenticated, async (req: any, res) => {
     try {
       const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
@@ -139,6 +166,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating vendor profile:", error);
       res.status(500).json({ message: "Failed to update vendor profile" });
+    }
+  });
+
+  // DELETE vendor (optional for later)
+  app.delete('/api/vendors', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      await storage.deleteVendor(vendor.id);
+      res.json({ message: "Vendor profile deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting vendor:", error);
+      res.status(500).json({ message: "Failed to delete vendor profile" });
     }
   });
 
@@ -182,8 +227,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Portfolio routes
-  app.get('/api/vendor/portfolio', isAuthenticated, async (req: any, res) => {
+  // 4. /api/portfolio - Vendor portfolio management
+  // GET vendor portfolio
+  app.get('/api/portfolio', isAuthenticated, async (req: any, res) => {
     try {
       const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
@@ -197,6 +243,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching portfolio:", error);
       res.status(500).json({ message: "Failed to fetch portfolio" });
+    }
+  });
+
+  // POST vendor uploads images/videos/links
+  app.post('/api/portfolio', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      const portfolioData = {
+        ...req.body,
+        vendorId: vendor.id,
+      };
+      
+      const portfolioItem = await storage.createPortfolioItem(portfolioData);
+      res.json(portfolioItem);
+    } catch (error) {
+      console.error("Error uploading portfolio item:", error);
+      res.status(500).json({ message: "Failed to upload portfolio item" });
     }
   });
 
@@ -353,13 +422,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Inquiry routes
+  // 2. /api/inquiries - Inquiry management
+  // POST consumer sends inquiry to vendor
   app.post('/api/inquiries', isAuthenticated, async (req: any, res) => {
     try {
       const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
-        return res.status(404).json({ message: "Couple profile not found" });
+        return res.status(404).json({ message: "Consumer profile not found" });
       }
 
       const inquiryData = insertInquirySchema.parse({
@@ -375,45 +446,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/inquiries/received', isAuthenticated, async (req: any, res) => {
+  // GET vendor inquiries (received inquiries for vendors)
+  app.get('/api/inquiries', isAuthenticated, async (req: any, res) => {
     try {
       const userId = (req.user as any)?.claims?.sub;
-      const vendor = await storage.getVendorByUserId(userId);
+      const user = await storage.getUser(userId);
       
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (user.role === 'vendor') {
+        const vendor = await storage.getVendorByUserId(userId);
+        if (!vendor) {
+          return res.status(404).json({ message: "Vendor profile not found" });
+        }
+        const inquiries = await storage.getVendorInquiries(vendor.id);
+        res.json(inquiries);
+      } else if (user.role === 'consumer') {
+        // For consumers, get their sent inquiries
+        const inquiries = await storage.getConsumerInquiries(userId);
+        res.json(inquiries);
+      } else {
+        res.status(403).json({ message: "Access denied" });
+      }
+    } catch (error) {
+      console.error("Error fetching inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+
+  // PUT vendor updates inquiry status (accept/decline)
+  app.put('/api/inquiries/:inquiryId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const { inquiryId } = req.params;
+      const { response, status } = req.body;
+
+      // Verify the vendor owns this inquiry
+      const vendor = await storage.getVendorByUserId(userId);
       if (!vendor) {
         return res.status(404).json({ message: "Vendor profile not found" });
       }
 
-      const inquiries = await storage.getVendorInquiries(vendor.id);
-      res.json(inquiries);
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-      res.status(500).json({ message: "Failed to fetch inquiries" });
-    }
-  });
-
-  app.get('/api/inquiries/sent', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.user as any)?.claims?.sub;
-      const couple = await storage.getCoupleByUserId(userId);
-      
-      if (!couple) {
-        return res.status(404).json({ message: "Couple profile not found" });
-      }
-
-      const inquiries = await storage.getCoupleInquiries(couple.id);
-      res.json(inquiries);
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-      res.status(500).json({ message: "Failed to fetch inquiries" });
-    }
-  });
-
-  app.put('/api/inquiries/:inquiryId/respond', isAuthenticated, async (req: any, res) => {
-    try {
-      const { inquiryId } = req.params;
-      const { response, status } = req.body;
-      
       const inquiry = await storage.updateInquiry(inquiryId, {
         vendorResponse: response,
         status,
@@ -421,8 +496,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(inquiry);
     } catch (error) {
-      console.error("Error responding to inquiry:", error);
-      res.status(500).json({ message: "Failed to respond to inquiry" });
+      console.error("Error updating inquiry:", error);
+      res.status(500).json({ message: "Failed to update inquiry" });
     }
   });
 
@@ -519,8 +594,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Vendor availability routes
-  app.get('/api/vendor/availability', isAuthenticated, async (req: any, res) => {
+  // 3. /api/calendar - Vendor availability management
+  // GET vendor availability
+  app.get('/api/calendar', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const vendor = await storage.getVendorByUserId(userId);
@@ -537,7 +613,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/vendor/availability', isAuthenticated, async (req: any, res) => {
+  // POST vendor sets availability
+  app.post('/api/calendar', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor not found" });
+      }
+
+      const { date, isAvailable } = req.body;
+      if (!date) {
+        return res.status(400).json({ message: "Date is required" });
+      }
+
+      const availability = await storage.updateVendorAvailability({
+        vendorId: vendor.id,
+        date: new Date(date),
+        isAvailable: Boolean(isAvailable),
+      });
+
+      res.json(availability);
+    } catch (error) {
+      console.error("Error setting vendor availability:", error);
+      res.status(500).json({ message: "Failed to set availability" });
+    }
+  });
+
+  // PUT update availability
+  app.put('/api/calendar', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const vendor = await storage.getVendorByUserId(userId);

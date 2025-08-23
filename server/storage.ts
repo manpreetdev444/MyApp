@@ -55,6 +55,7 @@ export interface IStorage {
   getVendorById(vendorId: string): Promise<Vendor | undefined>;
   createVendor(vendor: InsertVendor): Promise<Vendor>;
   updateVendor(vendorId: string, updates: Partial<InsertVendor>): Promise<Vendor>;
+  deleteVendor(vendorId: string): Promise<void>;
   searchVendors(filters: {
     category?: string;
     location?: string;
@@ -182,6 +183,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(vendors.id, vendorId))
       .returning();
     return vendor;
+  }
+
+  async deleteVendor(vendorId: string): Promise<void> {
+    await db.delete(vendors).where(eq(vendors.id, vendorId));
   }
 
   async searchVendors(filters: {

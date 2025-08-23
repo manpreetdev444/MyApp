@@ -83,31 +83,31 @@ export default function ConsumerDashboard() {
 
   // Queries
   const { data: vendors, refetch: refetchVendors } = useQuery({
-    queryKey: ["/api/vendors/search", { searchQuery, categoryFilter, locationFilter, budgetFilter }],
+    queryKey: ["/api/vendors", { searchQuery, categoryFilter, locationFilter, budgetFilter }],
     enabled: isAuthenticated && user?.role !== 'vendor',
   });
 
   const { data: savedVendors } = useQuery({
-    queryKey: ["/api/consumer/saved-vendors"],
+    queryKey: ["/api/saved-vendors"],
     enabled: isAuthenticated && user?.role !== 'vendor',
   });
 
   const { data: inquiries } = useQuery({
-    queryKey: ["/api/consumer/inquiries"],
+    queryKey: ["/api/inquiries"],
     enabled: isAuthenticated && user?.role !== 'vendor',
   });
 
   // Mutations
   const saveVendorMutation = useMutation({
     mutationFn: async (vendorId: string) => {
-      return apiRequest('POST', '/api/consumer/save-vendor', { vendorId });
+      return apiRequest('POST', '/api/saved-vendors', { vendorId });
     },
     onSuccess: () => {
       toast({
         title: "Vendor Saved",
         description: "Vendor has been added to your favorites.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/consumer/saved-vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-vendors"] });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -131,14 +131,14 @@ export default function ConsumerDashboard() {
 
   const unsaveVendorMutation = useMutation({
     mutationFn: async (vendorId: string) => {
-      return apiRequest('DELETE', `/api/consumer/save-vendor/${vendorId}`);
+      return apiRequest('DELETE', `/api/saved-vendors/${vendorId}`);
     },
     onSuccess: () => {
       toast({
         title: "Vendor Removed",
         description: "Vendor has been removed from your favorites.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/consumer/saved-vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-vendors"] });
     },
     onError: () => {
       toast({
@@ -151,7 +151,7 @@ export default function ConsumerDashboard() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
-      return apiRequest('PUT', '/api/consumer/profile', profileData);
+      return apiRequest('PUT', '/api/profile', profileData);
     },
     onSuccess: () => {
       toast({

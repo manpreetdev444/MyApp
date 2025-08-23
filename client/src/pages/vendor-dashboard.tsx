@@ -89,31 +89,31 @@ export default function VendorDashboard() {
 
   // Queries
   const { data: inquiries } = useQuery({
-    queryKey: ["/api/inquiries/received"],
+    queryKey: ["/api/inquiries"],
     enabled: isAuthenticated && user?.role === 'vendor',
   });
 
   const { data: portfolio } = useQuery({
-    queryKey: ["/api/vendor/portfolio"],
+    queryKey: ["/api/portfolio"],
     enabled: isAuthenticated && user?.role === 'vendor',
   });
 
   const { data: availability } = useQuery({
-    queryKey: ["/api/vendor/availability"],
+    queryKey: ["/api/calendar"],
     enabled: isAuthenticated && user?.role === 'vendor',
   });
 
   // Mutations
   const respondToInquiryMutation = useMutation({
     mutationFn: async ({ inquiryId, response, status }: { inquiryId: string; response: string; status: string }) => {
-      return apiRequest('PUT', `/api/inquiries/${inquiryId}/respond`, { response, status });
+      return apiRequest('PUT', `/api/inquiries/${inquiryId}`, { response, status });
     },
     onSuccess: () => {
       toast({
         title: "Response Sent",
         description: "Your response has been sent to the client.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/inquiries/received"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/inquiries"] });
       setSelectedInquiry(null);
       setResponse('');
     },
@@ -139,7 +139,7 @@ export default function VendorDashboard() {
 
   const updateAvailabilityMutation = useMutation({
     mutationFn: async ({ date, isAvailable }: { date: Date; isAvailable: boolean }) => {
-      return apiRequest('PUT', '/api/vendor/availability', {
+      return apiRequest('PUT', '/api/calendar', {
         date: date.toISOString(),
         isAvailable
       });
@@ -149,7 +149,7 @@ export default function VendorDashboard() {
         title: "Availability Updated",
         description: "Your calendar availability has been updated.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/vendor/availability"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/calendar"] });
       setIsDateDialogOpen(false);
     },
     onError: () => {
@@ -163,7 +163,7 @@ export default function VendorDashboard() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
-      return apiRequest('PUT', '/api/vendor/profile', profileData);
+      return apiRequest('PUT', '/api/vendors', profileData);
     },
     onSuccess: () => {
       toast({
@@ -196,7 +196,7 @@ export default function VendorDashboard() {
       const file = result.successful[0];
       const uploadURL = file.uploadURL;
       
-      apiRequest('PUT', '/api/portfolio-images', {
+      apiRequest('POST', '/api/portfolio', {
         imageURL: uploadURL,
         title: file.name,
         description: '',
@@ -205,7 +205,7 @@ export default function VendorDashboard() {
           title: "Image Uploaded",
           description: "Your portfolio image has been uploaded successfully.",
         });
-        queryClient.invalidateQueries({ queryKey: ["/api/vendor/portfolio"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/portfolio"] });
       }).catch(() => {
         toast({
           title: "Error",
