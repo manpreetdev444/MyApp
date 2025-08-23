@@ -463,7 +463,7 @@ export default function Landing() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <Card className="border-rose-gold/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-rose-gold/5" data-testid="card-vendor-discovery">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-rose-gold to-rose-gold/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-16 h-16 bg-rose-gold rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Search className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Find Your Dream Team</h3>
@@ -476,7 +476,7 @@ export default function Landing() {
 
           <Card className="border-sage/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-sage/5" data-testid="card-portfolio-showcase">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-sage to-sage/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-16 h-16 bg-sage rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Showcase Excellence</h3>
@@ -489,7 +489,7 @@ export default function Landing() {
 
           <Card className="border-dusty-blue/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-dusty-blue/5" data-testid="card-event-planning">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-dusty-blue to-dusty-blue/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-16 h-16 bg-dusty-blue rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Calendar className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Plan Like a Pro</h3>
@@ -502,7 +502,7 @@ export default function Landing() {
 
           <Card className="border-champagne/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-champagne/5" data-testid="card-budget-tracking">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-champagne to-champagne/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-16 h-16 bg-champagne rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-charcoal mb-3 font-playfair">Budget Bliss</h3>
