@@ -6,6 +6,9 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import { insertVendorSchema, insertVendorPackageSchema, insertInquirySchema, insertBudgetItemSchema, insertTimelineItemSchema, insertCoupleSchema, insertIndividualSchema } from "@shared/schema";
 import { z } from "zod";
+import { eq, ilike, and, or } from "drizzle-orm";
+import { db } from "./db";
+import { vendors } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -513,6 +516,155 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating timeline item:", error);
       res.status(500).json({ message: "Failed to update timeline item" });
+    }
+  });
+
+  // Vendor availability routes
+  app.get('/api/vendor/availability', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor not found" });
+      }
+
+      const availability = await storage.getVendorAvailability(vendor.id);
+      res.json(availability);
+    } catch (error) {
+      console.error("Error fetching vendor availability:", error);
+      res.status(500).json({ message: "Failed to fetch availability" });
+    }
+  });
+
+  app.put('/api/vendor/availability', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor not found" });
+      }
+
+      const { date, isAvailable } = req.body;
+      if (!date) {
+        return res.status(400).json({ message: "Date is required" });
+      }
+
+      const availability = await storage.updateVendorAvailability({
+        vendorId: vendor.id,
+        date: new Date(date),
+        isAvailable: Boolean(isAvailable),
+      });
+
+      res.json(availability);
+    } catch (error) {
+      console.error("Error updating vendor availability:", error);
+      res.status(500).json({ message: "Failed to update availability" });
+    }
+  });
+
+  // Consumer routes
+  app.get('/api/vendors/search', isAuthenticated, async (req: any, res) => {
+    try {
+      const { searchQuery = '', categoryFilter = '', locationFilter = '', budgetFilter = '' } = req.query;
+      
+      // Build search filters
+      const whereConditions: any[] = [];
+      
+      if (searchQuery) {
+        whereConditions.push(
+          or(
+            ilike(vendors.businessName, `%${searchQuery}%`),
+            ilike(vendors.description, `%${searchQuery}%`)
+          )
+        );
+      }
+      
+      if (categoryFilter) {
+        whereConditions.push(eq(vendors.category, categoryFilter));
+      }
+      
+      if (locationFilter) {
+        whereConditions.push(ilike(vendors.location, `%${locationFilter}%`));
+      }
+
+      const searchCondition = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
+      const vendorList = await (searchCondition
+        ? db.select().from(vendors).where(searchCondition).limit(50)
+        : db.select().from(vendors).limit(50)
+      );
+
+      res.json(vendorList);
+    } catch (error) {
+      console.error("Error searching vendors:", error);
+      res.status(500).json({ message: "Failed to search vendors" });
+    }
+  });
+
+  app.get('/api/consumer/saved-vendors', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const savedVendors = await storage.getSavedVendors(userId);
+      res.json(savedVendors);
+    } catch (error) {
+      console.error("Error fetching saved vendors:", error);
+      res.status(500).json({ message: "Failed to fetch saved vendors" });
+    }
+  });
+
+  app.post('/api/consumer/save-vendor', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { vendorId } = req.body;
+
+      if (!vendorId) {
+        return res.status(400).json({ message: "Vendor ID is required" });
+      }
+
+      const savedVendor = await storage.saveVendor({ userId, vendorId });
+      res.json(savedVendor);
+    } catch (error) {
+      console.error("Error saving vendor:", error);
+      res.status(500).json({ message: "Failed to save vendor" });
+    }
+  });
+
+  app.delete('/api/consumer/save-vendor/:vendorId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { vendorId } = req.params;
+
+      await storage.unsaveVendor(userId, vendorId);
+      res.json({ message: "Vendor removed from saved list" });
+    } catch (error) {
+      console.error("Error removing saved vendor:", error);
+      res.status(500).json({ message: "Failed to remove vendor" });
+    }
+  });
+
+  app.get('/api/consumer/inquiries', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const inquiries = await storage.getConsumerInquiries(userId);
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching consumer inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+
+  app.put('/api/consumer/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const updates = req.body;
+
+      const updatedProfile = await storage.updateConsumerProfile(userId, updates);
+      res.json(updatedProfile);
+    } catch (error) {
+      console.error("Error updating consumer profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
     }
   });
 

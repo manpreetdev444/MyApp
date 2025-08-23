@@ -149,6 +149,14 @@ export const vendorAvailability = pgTable("vendor_availability", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Saved vendors for consumers
+export const savedVendors = pgTable("saved_vendors", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Individuals table for individual users seeking services
 export const individuals = pgTable("individuals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -232,6 +240,17 @@ export const timelineItemsRelations = relations(timelineItems, ({ one }) => ({
   }),
 }));
 
+export const savedVendorsRelations = relations(savedVendors, ({ one }) => ({
+  user: one(users, {
+    fields: [savedVendors.userId],
+    references: [users.id],
+  }),
+  vendor: one(vendors, {
+    fields: [savedVendors.vendorId],
+    references: [vendors.id],
+  }),
+}));
+
 export const individualsRelations = relations(individuals, ({ one }) => ({
   user: one(users, {
     fields: [individuals.userId],
@@ -302,6 +321,11 @@ export const insertVendorAvailabilitySchema = createInsertSchema(vendorAvailabil
   updatedAt: true,
 });
 
+export const insertSavedVendorSchema = createInsertSchema(savedVendors).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema> & { id: string };
 export type User = typeof users.$inferSelect;
@@ -324,3 +348,5 @@ export type InsertBudgetItem = z.infer<typeof insertBudgetItemSchema>;
 export type InsertTimelineItem = z.infer<typeof insertTimelineItemSchema>;
 export type VendorAvailability = typeof vendorAvailability.$inferSelect;
 export type InsertVendorAvailability = z.infer<typeof insertVendorAvailabilitySchema>;
+export type SavedVendor = typeof savedVendors.$inferSelect;
+export type InsertSavedVendor = z.infer<typeof insertSavedVendorSchema>;

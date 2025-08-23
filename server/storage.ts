@@ -9,6 +9,7 @@ import {
   budgetItems,
   timelineItems,
   vendorAvailability,
+  savedVendors,
   type User,
   type UpsertUser,
   type Couple,
@@ -20,6 +21,7 @@ import {
   type BudgetItem,
   type TimelineItem,
   type VendorAvailability,
+  type SavedVendor,
   type InsertCouple,
   type InsertVendor,
   type InsertIndividual,
@@ -29,6 +31,7 @@ import {
   type InsertBudgetItem,
   type InsertTimelineItem,
   type InsertVendorAvailability,
+  type InsertSavedVendor,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, ilike, sql, gte, lte } from "drizzle-orm";
@@ -92,6 +95,15 @@ export interface IStorage {
   // Vendor availability operations
   getVendorAvailability(vendorId: string): Promise<VendorAvailability[]>;
   updateVendorAvailability(availabilityData: InsertVendorAvailability): Promise<VendorAvailability>;
+
+  // Saved vendor operations
+  getSavedVendors(userId: string): Promise<SavedVendor[]>;
+  saveVendor(saveData: InsertSavedVendor): Promise<SavedVendor>;
+  unsaveVendor(userId: string, vendorId: string): Promise<void>;
+
+  // Consumer operations
+  getConsumerInquiries(userId: string): Promise<Inquiry[]>;
+  updateConsumerProfile(userId: string, updates: any): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -338,6 +350,132 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // Saved vendor operations
+  async getSavedVendors(userId: string): Promise<SavedVendor[]> {
+    return db
+      .select({
+        id: savedVendors.id,
+        userId: savedVendors.userId,
+        vendorId: savedVendors.vendorId,
+        createdAt: savedVendors.createdAt,
+        vendor: vendors,
+      })
+      .from(savedVendors)
+      .innerJoin(vendors, eq(savedVendors.vendorId, vendors.id))
+      .where(eq(savedVendors.userId, userId)) as any;
+  }
+
+  async saveVendor(saveData: InsertSavedVendor): Promise<SavedVendor> {
+    // Check if already saved
+    const [existing] = await db
+      .select()
+      .from(savedVendors)
+      .where(
+        and(
+          eq(savedVendors.userId, saveData.userId),
+          eq(savedVendors.vendorId, saveData.vendorId)
+        )
+      );
+
+    if (existing) {
+      return existing;
+    }
+
+    const [saved] = await db
+      .insert(savedVendors)
+      .values(saveData)
+      .returning();
+    return saved;
+  }
+
+  async unsaveVendor(userId: string, vendorId: string): Promise<void> {
+    await db
+      .delete(savedVendors)
+      .where(
+        and(
+          eq(savedVendors.userId, userId),
+          eq(savedVendors.vendorId, vendorId)
+        )
+      );
+  }
+
+  // Consumer operations
+  async getConsumerInquiries(userId: string): Promise<Inquiry[]> {
+    // Get inquiries based on user role - if couple, use couple id, if individual, use user id directly
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    
+    if (!user) {
+      return [];
+    }
+
+    if (user.role === 'couple') {
+      const [couple] = await db.select().from(couples).where(eq(couples.userId, userId));
+      if (!couple) return [];
+      
+      return db
+        .select({
+          id: inquiries.id,
+          coupleId: inquiries.coupleId,
+          vendorId: inquiries.vendorId,
+          message: inquiries.message,
+          budget: inquiries.budget,
+          eventDate: inquiries.eventDate,
+          status: inquiries.status,
+          vendorResponse: inquiries.vendorResponse,
+          createdAt: inquiries.createdAt,
+          updatedAt: inquiries.updatedAt,
+          vendor: vendors,
+        })
+        .from(inquiries)
+        .innerJoin(vendors, eq(inquiries.vendorId, vendors.id))
+        .where(eq(inquiries.coupleId, couple.id))
+        .orderBy(desc(inquiries.createdAt)) as any;
+    }
+
+    // For individuals or other consumer types, we might need a different approach
+    // For now, return empty array
+    return [];
+  }
+
+  async updateConsumerProfile(userId: string, updates: any): Promise<any> {
+    // Update based on user role
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.role === 'couple') {
+      const [couple] = await db.select().from(couples).where(eq(couples.userId, userId));
+      if (!couple) {
+        throw new Error('Couple profile not found');
+      }
+
+      const [updated] = await db
+        .update(couples)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(couples.id, couple.id))
+        .returning();
+      return updated;
+    }
+
+    if (user.role === 'individual') {
+      const [individual] = await db.select().from(individuals).where(eq(individuals.userId, userId));
+      if (!individual) {
+        throw new Error('Individual profile not found');
+      }
+
+      const [updated] = await db
+        .update(individuals)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(individuals.id, individual.id))
+        .returning();
+      return updated;
+    }
+
+    throw new Error('Invalid user role for consumer profile update');
   }
 }
 
