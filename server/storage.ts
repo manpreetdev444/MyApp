@@ -172,9 +172,7 @@ export class DatabaseStorage implements IStorage {
     maxPrice?: number;
     search?: string;
   }): Promise<Vendor[]> {
-    let query = db.select().from(vendors).where(eq(vendors.isActive, true));
-
-    const conditions = [];
+    const conditions = [eq(vendors.isActive, true)];
 
     if (filters.category) {
       conditions.push(eq(vendors.category, filters.category));
@@ -190,11 +188,11 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    return await query.orderBy(desc(vendors.rating));
+    return await db
+      .select()
+      .from(vendors)
+      .where(and(...conditions))
+      .orderBy(desc(vendors.rating));
   }
 
   // Vendor package operations

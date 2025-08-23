@@ -14,7 +14,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -41,13 +41,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup user profile after login
   app.post('/api/setup-profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const { role, ...profileData } = req.body;
 
       // Update user role
       await storage.upsertUser({
         id: userId,
-        ...req.user.claims,
+        ...(req.user as any).claims,
         role,
       });
 
@@ -127,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/vendors/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
       
       if (!vendor) {
@@ -147,7 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vendor package routes
   app.get('/api/vendor/packages', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
       
       if (!vendor) {
@@ -164,7 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/vendor/packages', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
       
       if (!vendor) {
@@ -187,7 +187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Portfolio routes
   app.get('/api/vendor/portfolio', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
       
       if (!vendor) {
@@ -204,7 +204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Object storage routes for portfolio images
   app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
-    const userId = req.user?.claims?.sub;
+    const userId = (req.user as any)?.claims?.sub;
     const objectStorageService = new ObjectStorageService();
     
     try {
@@ -240,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ error: "imageURL is required" });
     }
 
-    const userId = req.user?.claims?.sub;
+    const userId = (req.user as any)?.claims?.sub;
     const vendor = await storage.getVendorByUserId(userId);
     
     if (!vendor) {
@@ -278,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Inquiry routes
   app.post('/api/inquiries', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
@@ -300,7 +300,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/inquiries/received', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const vendor = await storage.getVendorByUserId(userId);
       
       if (!vendor) {
@@ -317,7 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/inquiries/sent', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
@@ -352,7 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Budget routes
   app.get('/api/budget', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
@@ -369,7 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/budget', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
@@ -392,7 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Timeline routes
   app.get('/api/timeline', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
@@ -409,7 +409,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/timeline', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const couple = await storage.getCoupleByUserId(userId);
       
       if (!couple) {
