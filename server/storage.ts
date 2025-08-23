@@ -8,6 +8,7 @@ import {
   inquiries,
   budgetItems,
   timelineItems,
+  vendorAvailability,
   type User,
   type UpsertUser,
   type Couple,
@@ -18,6 +19,7 @@ import {
   type Inquiry,
   type BudgetItem,
   type TimelineItem,
+  type VendorAvailability,
   type InsertCouple,
   type InsertVendor,
   type InsertIndividual,
@@ -26,6 +28,7 @@ import {
   type InsertInquiry,
   type InsertBudgetItem,
   type InsertTimelineItem,
+  type InsertVendorAvailability,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, ilike, sql, gte, lte } from "drizzle-orm";
@@ -85,6 +88,10 @@ export interface IStorage {
   createTimelineItem(item: InsertTimelineItem): Promise<TimelineItem>;
   updateTimelineItem(itemId: string, updates: Partial<InsertTimelineItem>): Promise<TimelineItem>;
   deleteTimelineItem(itemId: string): Promise<void>;
+
+  // Vendor availability operations
+  getVendorAvailability(vendorId: string): Promise<VendorAvailability[]>;
+  updateVendorAvailability(availabilityData: InsertVendorAvailability): Promise<VendorAvailability>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -299,6 +306,38 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTimelineItem(itemId: string): Promise<void> {
     await db.delete(timelineItems).where(eq(timelineItems.id, itemId));
+  }
+
+  // Vendor availability operations
+  async getVendorAvailability(vendorId: string): Promise<VendorAvailability[]> {
+    return db.select().from(vendorAvailability).where(eq(vendorAvailability.vendorId, vendorId));
+  }
+
+  async updateVendorAvailability(availabilityData: InsertVendorAvailability): Promise<VendorAvailability> {
+    const [existing] = await db
+      .select()
+      .from(vendorAvailability)
+      .where(and(
+        eq(vendorAvailability.vendorId, availabilityData.vendorId),
+        eq(vendorAvailability.date, availabilityData.date)
+      ));
+
+    if (existing) {
+      // Update existing availability record
+      const [updated] = await db
+        .update(vendorAvailability)
+        .set({ ...availabilityData, updatedAt: new Date() })
+        .where(eq(vendorAvailability.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Create new availability record
+      const [created] = await db
+        .insert(vendorAvailability)
+        .values(availabilityData)
+        .returning();
+      return created;
+    }
   }
 }
 

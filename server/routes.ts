@@ -270,6 +270,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Vendor availability routes
+  app.get('/api/vendor/availability', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      const availability = await storage.getVendorAvailability(vendor.id);
+      res.json(availability);
+    } catch (error) {
+      console.error("Error fetching vendor availability:", error);
+      res.status(500).json({ message: "Failed to fetch availability" });
+    }
+  });
+
+  app.put('/api/vendor/availability', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      const { date, isAvailable, eventType, eventTitle, notes } = req.body;
+      
+      if (!date) {
+        return res.status(400).json({ error: "Date is required" });
+      }
+
+      const availability = await storage.updateVendorAvailability({
+        vendorId: vendor.id,
+        date: new Date(date),
+        isAvailable: isAvailable ?? true,
+        eventType: eventType || null,
+        eventTitle: eventTitle || null,
+        notes: notes || null,
+      });
+
+      res.json(availability);
+    } catch (error) {
+      console.error("Error updating vendor availability:", error);
+      res.status(500).json({ message: "Failed to update availability" });
+    }
+  });
+
+  // Vendor profile routes
+  app.put('/api/vendor/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      const { businessName, category, description, location, phone, website, instagram, pinterest } = req.body;
+      
+      const updatedVendor = await storage.updateVendor(vendor.id, {
+        businessName,
+        category,
+        description,
+        location,
+        phone,
+        website,
+        instagram,
+        pinterest,
+      });
+
+      res.json(updatedVendor);
+    } catch (error) {
+      console.error("Error updating vendor profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   // Inquiry routes
   app.post('/api/inquiries', isAuthenticated, async (req: any, res) => {
     try {

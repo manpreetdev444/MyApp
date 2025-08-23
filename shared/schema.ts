@@ -136,6 +136,19 @@ export const timelineItems = pgTable("timeline_items", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Vendor availability for calendar management
+export const vendorAvailability = pgTable("vendor_availability", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: 'cascade' }),
+  date: timestamp("date").notNull(),
+  isAvailable: boolean("is_available").default(true),
+  eventType: varchar("event_type"), // if booked, what type of event
+  eventTitle: varchar("event_title"), // if booked, event title
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Individuals table for individual users seeking services
 export const individuals = pgTable("individuals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -170,6 +183,14 @@ export const vendorsRelations = relations(vendors, ({ one, many }) => ({
   packages: many(vendorPackages),
   portfolioItems: many(portfolioItems),
   inquiries: many(inquiries),
+  availability: many(vendorAvailability),
+}));
+
+export const vendorAvailabilityRelations = relations(vendorAvailability, ({ one }) => ({
+  vendor: one(vendors, {
+    fields: [vendorAvailability.vendorId],
+    references: [vendors.id],
+  }),
 }));
 
 export const vendorPackagesRelations = relations(vendorPackages, ({ one }) => ({
@@ -275,6 +296,12 @@ export const insertIndividualSchema = createInsertSchema(individuals).omit({
   updatedAt: true,
 });
 
+export const insertVendorAvailabilitySchema = createInsertSchema(vendorAvailability).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema> & { id: string };
 export type User = typeof users.$inferSelect;
@@ -295,3 +322,5 @@ export type InsertPortfolioItem = z.infer<typeof insertPortfolioItemSchema>;
 export type InsertInquiry = z.infer<typeof insertInquirySchema>;
 export type InsertBudgetItem = z.infer<typeof insertBudgetItemSchema>;
 export type InsertTimelineItem = z.infer<typeof insertTimelineItemSchema>;
+export type VendorAvailability = typeof vendorAvailability.$inferSelect;
+export type InsertVendorAvailability = z.infer<typeof insertVendorAvailabilitySchema>;
