@@ -122,8 +122,6 @@ export interface IStorage {
   getUserSettings(userId: string): Promise<UserSettings | undefined>;
   upsertUserSettings(userId: string, settings: Partial<InsertUserSettings>): Promise<UserSettings>;
 
-  // Role switching
-  updateUserRole(userId: string, newRole: 'vendor' | 'couple' | 'individual'): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -554,15 +552,6 @@ export class DatabaseStorage implements IStorage {
     return upserted;
   }
 
-  // Role switching
-  async updateUserRole(userId: string, newRole: 'vendor' | 'couple' | 'individual'): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ role: newRole, updatedAt: new Date() })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
 }
 
 export const storage = new DatabaseStorage();
