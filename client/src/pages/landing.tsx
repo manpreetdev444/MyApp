@@ -538,8 +538,8 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-br from-charcoal to-charcoal/90 text-white mt-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-rose-gold/5 to-dusty-blue/5"></div>
+      <footer className="bg-charcoal text-white mt-16 relative">
+        <div className="absolute inset-0 bg-charcoal/95"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
