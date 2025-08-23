@@ -23,11 +23,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get role-specific data
       let roleData = null;
-      if (user.role === 'couple') {
-        roleData = await storage.getCoupleByUserId(userId);
-      } else if (user.role === 'vendor') {
+      if (user.role === 'vendor') {
         roleData = await storage.getVendorByUserId(userId);
-      } else if (user.role === 'individual') {
+      } else if (user.role === 'consumer') {
         roleData = await storage.getIndividualByUserId(userId);
       }
 
@@ -52,23 +50,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Create role-specific profile
-      if (role === 'couple') {
-        const coupleData = insertCoupleSchema.parse({
-          userId,
-          ...profileData,
-        });
-        const couple = await storage.createCouple(coupleData);
-        res.json({ success: true, profile: couple });
-      } else if (role === 'vendor') {
+      if (role === 'vendor') {
         const vendorData = insertVendorSchema.parse({
           userId,
+          businessName: profileData.businessName || 'My Business',
+          category: profileData.category || 'Other Services',
+          description: profileData.description || 'Professional services',
           ...profileData,
         });
         const vendor = await storage.createVendor(vendorData);
         res.json({ success: true, profile: vendor });
-      } else if (role === 'individual') {
+      } else if (role === 'consumer') {
         const individualData = insertIndividualSchema.parse({
           userId,
+          fullName: profileData.fullName || `${(req.user as any).claims.first_name} ${(req.user as any).claims.last_name}`,
           ...profileData,
         });
         const individual = await storage.createIndividual(individualData);

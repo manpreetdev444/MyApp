@@ -208,24 +208,21 @@ export default function Landing() {
                     </div>
 
                     <div className="space-y-3">
-                      <Label htmlFor="signup-role" className="text-charcoal font-semibold">I am a...</Label>
+                      <Label htmlFor="signup-role" className="text-charcoal font-semibold">What do you want to do?</Label>
                       <Select 
                         value={signUpData.role} 
                         onValueChange={(value) => setSignUpData({ ...signUpData, role: value })}
                         required
                       >
                         <SelectTrigger className="h-11 border-2 border-champagne/20 focus:border-champagne focus:ring-champagne/20 bg-white shadow-sm" data-testid="select-signup-role">
-                          <SelectValue placeholder="Choose what describes you best" />
+                          <SelectValue placeholder="Choose your goal" />
                         </SelectTrigger>
                         <SelectContent className="bg-white border-2 border-champagne/20">
-                          <SelectItem value="couple" className="focus:bg-rose-gold/10 focus:text-rose-gold">
-                            💕 Couple planning a wedding
-                          </SelectItem>
-                          <SelectItem value="individual" className="focus:bg-dusty-blue/10 focus:text-dusty-blue">
-                            🎉 Individual looking for services
+                          <SelectItem value="consumer" className="focus:bg-rose-gold/10 focus:text-rose-gold">
+                            🔍 I want to find vendors
                           </SelectItem>
                           <SelectItem value="vendor" className="focus:bg-sage/10 focus:text-sage">
-                            ✨ Vendor/Service provider
+                            💼 I want to sell my services
                           </SelectItem>
                         </SelectContent>
                       </Select>

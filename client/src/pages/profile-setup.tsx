@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Heart, Briefcase, Plus, X, User } from "lucide-react";
 
 export default function ProfileSetup() {
-  const [selectedRole, setSelectedRole] = useState<'couple' | 'vendor' | 'individual' | ''>('');
+  const [selectedRole, setSelectedRole] = useState<'vendor' | 'consumer' | ''>('');
   const [socialMediaLinks, setSocialMediaLinks] = useState([{ platform: '', url: '' }]);
   const [formData, setFormData] = useState({
     // Couple fields
@@ -24,9 +24,8 @@ export default function ProfileSetup() {
     guestCount: '',
     location: '',
     
-    // Individual fields
+    // Consumer fields  
     fullName: '',
-    individualEmail: '',
     
     // Vendor fields
     businessName: '',
@@ -75,19 +74,10 @@ export default function ProfileSetup() {
     }
 
     // Check for required fields based on role
-    if (selectedRole === 'couple') {
-      if (!formData.coupleName || !formData.email) {
+    if (selectedRole === 'consumer') {
+      if (!formData.fullName) {
         toast({
-          title: "Missing Required Information",
-          description: "Please fill in all required fields marked with *",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else if (selectedRole === 'individual') {
-      if (!formData.fullName || !formData.individualEmail) {
-        toast({
-          title: "Missing Required Information",
+          title: "Missing Required Information", 
           description: "Please fill in all required fields marked with *",
           variant: "destructive",
         });
@@ -228,17 +218,17 @@ export default function ProfileSetup() {
               <Label className="text-base font-semibold text-charcoal mb-4 block">
                 I am a...
               </Label>
-              <RadioGroup value={selectedRole} onValueChange={(value: string) => setSelectedRole(value as 'couple' | 'vendor' | 'individual' | '')} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <RadioGroup value={selectedRole} onValueChange={(value: string) => setSelectedRole(value as 'vendor' | 'consumer' | '')} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="couple" id="couple" />
+                  <RadioGroupItem value="consumer" id="consumer" />
                   <Label 
-                    htmlFor="couple" 
+                    htmlFor="consumer" 
                     className="flex items-center gap-2 cursor-pointer p-4 border rounded-lg hover:bg-blush/50 flex-1"
                   >
                     <Heart className="w-5 h-5 text-rose-gold" />
                     <div>
-                      <div className="font-semibold">Couple</div>
-                      <div className="text-sm text-charcoal/70">Planning a wedding</div>
+                      <div className="font-semibold">I want to find vendors</div>
+                      <div className="text-sm text-charcoal/70">Planning a wedding or event</div>
                     </div>
                   </Label>
                 </div>
@@ -251,42 +241,29 @@ export default function ProfileSetup() {
                   >
                     <Briefcase className="w-5 h-5 text-sage" />
                     <div>
-                      <div className="font-semibold">Vendor</div>
-                      <div className="text-sm text-charcoal/70">Offering services</div>
+                      <div className="font-semibold">I want to sell my services</div>
+                      <div className="text-sm text-charcoal/70">Offering wedding/event services</div>
                     </div>
                   </Label>
                 </div>
                 
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="individual" id="individual" />
-                  <Label 
-                    htmlFor="individual" 
-                    className="flex items-center gap-2 cursor-pointer p-4 border rounded-lg hover:bg-blush/50 flex-1"
-                  >
-                    <User className="w-5 h-5 text-dusty-blue" />
-                    <div>
-                      <div className="font-semibold">Individual</div>
-                      <div className="text-sm text-charcoal/70">Seeking services</div>
-                    </div>
-                  </Label>
-                </div>
               </RadioGroup>
             </div>
 
-            {/* Couple Fields */}
-            {selectedRole === 'couple' && (
+            {/* Consumer Fields */}
+            {selectedRole === 'consumer' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-charcoal">Wedding Details</h3>
+                <h3 className="text-lg font-semibold text-charcoal">Event Details</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="coupleName">What do we call you? *</Label>
+                    <Label htmlFor="coupleName">Your Name *</Label>
                     <Input
                       id="coupleName"
                       required
                       value={formData.coupleName}
                       onChange={(e) => handleInputChange('coupleName', e.target.value)}
-                      placeholder="e.g., Emma & David"
+                      placeholder="e.g., Emma Johnson"
                     />
                   </div>
                   
@@ -304,7 +281,7 @@ export default function ProfileSetup() {
                 </div>
 
                 <div>
-                  <Label htmlFor="weddingDate">Wedding Date</Label>
+                  <Label htmlFor="weddingDate">Event Date</Label>
                   <Input
                     id="weddingDate"
                     type="date"
@@ -377,37 +354,6 @@ export default function ProfileSetup() {
               </div>
             )}
 
-            {/* Individual Fields */}
-            {selectedRole === 'individual' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-charcoal">Your Details</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="fullName">Name *</Label>
-                    <Input
-                      id="fullName"
-                      required
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange('fullName', e.target.value)}
-                      placeholder="e.g., Jessica Martinez"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="individualEmail">Email *</Label>
-                    <Input
-                      id="individualEmail"
-                      type="email"
-                      required
-                      value={formData.individualEmail}
-                      onChange={(e) => handleInputChange('individualEmail', e.target.value)}
-                      placeholder="your@email.com"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Vendor Fields */}
             {selectedRole === 'vendor' && (
