@@ -1,0 +1,111 @@
+🔹 Replit Debugging Prompt
+
+My app currently uses Replit Auth (OpenID Connect) for authentication, but I’m facing issues with role-based redirection.
+
+❌ Issues to Fix:
+
+After login, both consumers and vendors sometimes land on the consumer dashboard instead of their respective dashboards.
+
+Routes are not strictly protected — sometimes non-authenticated users can still access dashboard pages if they type the URL directly.
+
+Logout does not always cleanly redirect to /login.
+
+✅ What I Need:
+
+Please debug and fix the authentication + role redirection logic so it works correctly. Use my existing Replit Auth system (do NOT replace it with email/password auth).
+
+🔹 Requirements:
+
+Only authenticated users can access dashboards.
+
+Consumers → always land on /consumer-dashboard.
+
+Vendors → always land on /vendor-dashboard.
+
+If role is missing or invalid → redirect to /login.
+
+Protect routes so no one can access consumer/vendor dashboards without being logged in.
+
+Ensure logout properly redirects to /login.
+
+🔹 Middleware to Add:
+// middleware/auth.js
+function ensureAuthenticated(req, res, next) {
+  if (!req.oidc || !req.oidc.isAuthenticated()) {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+function redirectByRole(req, res) {
+  const user = req.oidc.user;
+  if (!user || !user.role) {
+    return res.redirect('/login');
+  }
+
+  if (user.role === 'consumer') {
+    return res.redirect('/consumer-dashboard');
+  } else if (user.role === 'vendor') {
+    return res.redirect('/vendor-dashboard');
+  } else {
+    return res.redirect('/login');
+  }
+}
+
+function requireConsumer(req, res, next) {
+  if (req.oidc.user.role !== 'consumer') {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+function requireVendor(req, res, next) {
+  if (req.oidc.user.role !== 'vendor') {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+module.exports = {
+  ensureAuthenticated,
+  redirectByRole,
+  requireConsumer,
+  requireVendor
+};
+
+🔹 Routes Update:
+const { ensureAuthenticated, redirectByRole, requireConsumer, requireVendor } = require('./middleware/auth');
+
+// After successful login
+app.get('/post-login', ensureAuthenticated, redirectByRole);
+
+// Consumer dashboard
+app.get('/consumer-dashboard', ensureAuthenticated, requireConsumer, (req, res) => {
+  res.render('consumer-dashboard', { user: req.oidc.user });
+});
+
+// Vendor dashboard
+app.get('/vendor-dashboard', ensureAuthenticated, requireVendor, (req, res) => {
+  res.render('vendor-dashboard', { user: req.oidc.user });
+});
+
+// Logout
+app.get('/logout', (req, res) => {
+  req.oidc.logout({ returnTo: '/login' });
+});
+
+🔹 Additional Request:
+
+Please make sure the redirect after login happens automatically by updating the Replit Auth callback URL to /post-login.
+
+Double-check that unauthenticated users cannot bypass the middleware by typing dashboard URLs directly.
+
+👉 Can you implement these fixes in my app and confirm that:
+
+Consumers only go to /consumer-dashboard
+
+Vendors only go to /vendor-dashboard
+
+All routes are protected
+
+Logout works cleanly

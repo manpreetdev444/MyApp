@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated, ensureAuthenticated, requireConsumer, requireVendor } from "./replitAuth";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import { insertVendorSchema, insertVendorPackageSchema, insertInquirySchema, insertBudgetItemSchema, insertTimelineItemSchema, insertCoupleSchema, insertIndividualSchema } from "@shared/schema";
@@ -13,6 +13,17 @@ import { vendors } from "@shared/schema";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+
+  // Protected page routes - these need to be before other routes to catch direct URL access
+  app.get('/consumer-dashboard', ensureAuthenticated, requireConsumer, (req, res) => {
+    // This will be handled by the frontend, but we ensure authentication first
+    res.redirect('/?authenticated=true');
+  });
+
+  app.get('/vendor-dashboard', ensureAuthenticated, requireVendor, (req, res) => {
+    // This will be handled by the frontend, but we ensure authentication first
+    res.redirect('/?authenticated=true');
+  });
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

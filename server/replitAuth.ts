@@ -64,7 +64,7 @@ async function upsertUser(
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
     authProvider: 'replit',
-    providerId: claims["sub"], // Store Replit user ID as providerId for future migration
+    providerId: claims["sub"],
   });
 }
 
@@ -116,7 +116,7 @@ export async function setupAuth(app: Express) {
     // Use the current request hostname for strategy selection
     const domain = req.hostname || process.env.REPLIT_DOMAINS!.split(",")[0];
     passport.authenticate(`replitauth:${domain}`, {
-      successReturnToOrRedirect: "/",
+      successRedirect: "/api/post-login",
       failureRedirect: "/api/login",
     })(req, res, next);
   });
@@ -131,8 +131,32 @@ export async function setupAuth(app: Express) {
       );
     });
   });
+
+  // Role-based redirection after successful login
+  app.get("/api/post-login", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || !user.role) {
+        return res.redirect("/");
+      }
+
+      if (user.role === 'vendor') {
+        return res.redirect("/vendor-dashboard");
+      } else if (user.role === 'couple' || user.role === 'individual') {
+        return res.redirect("/consumer-dashboard");
+      } else {
+        return res.redirect("/");
+      }
+    } catch (error) {
+      console.error("Error in post-login redirect:", error);
+      return res.redirect("/");
+    }
+  });
 }
 
+// Middleware for API routes that need authentication
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
@@ -159,5 +183,65 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   } catch (error) {
     res.status(401).json({ message: "Unauthorized" });
     return;
+  }
+};
+
+// Middleware for page routes that need authentication
+export const ensureAuthenticated: RequestHandler = async (req, res, next) => {
+  const user = req.user as any;
+
+  if (!req.isAuthenticated() || !user || !user.expires_at) {
+    return res.redirect('/api/login');
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  if (now <= user.expires_at) {
+    return next();
+  }
+
+  const refreshToken = user.refresh_token;
+  if (!refreshToken) {
+    return res.redirect('/api/login');
+  }
+
+  try {
+    const config = await getOidcConfig();
+    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+    updateUserSession(user, tokenResponse);
+    return next();
+  } catch (error) {
+    return res.redirect('/api/login');
+  }
+};
+
+// Middleware to require consumer role
+export const requireConsumer: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = (req.user as any)?.claims?.sub;
+    const user = await storage.getUser(userId);
+    
+    if (!user || (user.role !== 'couple' && user.role !== 'individual')) {
+      return res.redirect('/api/login');
+    }
+    
+    next();
+  } catch (error) {
+    return res.redirect('/api/login');
+  }
+};
+
+// Middleware to require vendor role
+export const requireVendor: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = (req.user as any)?.claims?.sub;
+    const user = await storage.getUser(userId);
+    
+    if (!user || user.role !== 'vendor') {
+      return res.redirect('/api/login');
+    }
+    
+    next();
+  } catch (error) {
+    return res.redirect('/api/login');
   }
 };

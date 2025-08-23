@@ -268,6 +268,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   lastName: true,
   profileImageUrl: true,
   role: true,
+  authProvider: true,
+  providerId: true,
 });
 
 export const insertCoupleSchema = createInsertSchema(couples).omit({

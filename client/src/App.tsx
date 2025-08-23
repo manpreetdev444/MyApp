@@ -38,8 +38,29 @@ function Router() {
         <>
           {(user?.role === 'couple' || user?.role === 'individual') && <Route path="/" component={ConsumerDashboard} />}
           {user?.role === 'vendor' && <Route path="/" component={VendorDashboard} />}
-          <Route path="/consumer-dashboard" component={ConsumerDashboard} />
-          <Route path="/vendor-dashboard" component={VendorDashboard} />
+          
+          {/* Protected consumer routes */}
+          <Route path="/consumer-dashboard">
+            {!isAuthenticated ? (
+              (() => { window.location.href = '/api/login'; return <div>Redirecting to login...</div>; })()
+            ) : (user?.role === 'couple' || user?.role === 'individual') ? (
+              <ConsumerDashboard />
+            ) : (
+              (() => { window.location.href = '/api/login'; return <div>Access denied. Redirecting...</div>; })()
+            )}
+          </Route>
+          
+          {/* Protected vendor routes */}
+          <Route path="/vendor-dashboard">
+            {!isAuthenticated ? (
+              (() => { window.location.href = '/api/login'; return <div>Redirecting to login...</div>; })()
+            ) : user?.role === 'vendor' ? (
+              <VendorDashboard />
+            ) : (
+              (() => { window.location.href = '/api/login'; return <div>Access denied. Redirecting...</div>; })()
+            )}
+          </Route>
+          
           <Route path="/vendors" component={VendorBrowse} />
           <Route path="/vendor/:vendorId" component={VendorProfile} />
         </>
