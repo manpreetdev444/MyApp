@@ -75,10 +75,10 @@ export default function ProfileSetup() {
 
     // Check for required fields based on role
     if (selectedRole === 'consumer') {
-      if (!formData.fullName) {
+      if (!formData.coupleName) {
         toast({
           title: "Missing Required Information", 
-          description: "Please fill in all required fields marked with *",
+          description: "Please fill in your name to continue",
           variant: "destructive",
         });
         return;
@@ -104,11 +104,22 @@ export default function ProfileSetup() {
       }
     }
 
-    setupMutation.mutate({
-      role: selectedRole,
-      ...formData,
-      socialMediaLinks: socialMediaLinks.filter(link => link.platform && link.url),
-    });
+    const submitData = { 
+      role: selectedRole, 
+      ...formData 
+    };
+    
+    // Map coupleName to fullName for consumer profiles
+    if (selectedRole === 'consumer') {
+      submitData.fullName = formData.coupleName;
+    }
+    
+    // Add social media links for vendors
+    if (selectedRole === 'vendor') {
+      submitData.socialMediaLinks = socialMediaLinks.filter(link => link.platform && link.url);
+    }
+    
+    setupMutation.mutate(submitData);
   };
 
   const handleInputChange = (field: string, value: string | number) => {
