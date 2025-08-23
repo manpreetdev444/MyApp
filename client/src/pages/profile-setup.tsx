@@ -104,18 +104,16 @@ export default function ProfileSetup() {
       }
     }
 
-    const submitData = { 
-      role: selectedRole, 
+    const submitData: any = { 
       ...formData 
     };
     
-    // Map coupleName to fullName for consumer profiles
+    // Map frontend role to backend role
     if (selectedRole === 'consumer') {
-      submitData.fullName = formData.coupleName;
-    }
-    
-    // Add social media links for vendors
-    if (selectedRole === 'vendor') {
+      submitData.role = 'individual'; // Backend expects 'individual' for consumer users
+      submitData.fullName = formData.coupleName; // Map coupleName to fullName
+    } else if (selectedRole === 'vendor') {
+      submitData.role = 'vendor';
       submitData.socialMediaLinks = socialMediaLinks.filter(link => link.platform && link.url);
     }
     
