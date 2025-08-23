@@ -10,6 +10,8 @@ import {
   timelineItems,
   vendorAvailability,
   savedVendors,
+  notifications,
+  userSettings,
   type User,
   type UpsertUser,
   type Couple,
@@ -22,6 +24,8 @@ import {
   type TimelineItem,
   type VendorAvailability,
   type SavedVendor,
+  type Notification,
+  type UserSettings,
   type InsertCouple,
   type InsertVendor,
   type InsertIndividual,
@@ -32,6 +36,8 @@ import {
   type InsertTimelineItem,
   type InsertVendorAvailability,
   type InsertSavedVendor,
+  type InsertNotification,
+  type InsertUserSettings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, ilike, sql, gte, lte } from "drizzle-orm";
@@ -105,6 +111,19 @@ export interface IStorage {
   // Consumer operations
   getConsumerInquiries(userId: string): Promise<Inquiry[]>;
   updateConsumerProfile(userId: string, updates: any): Promise<any>;
+
+  // Notification operations
+  getNotifications(userId: string): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationRead(notificationId: string): Promise<void>;
+  markAllNotificationsRead(userId: string): Promise<void>;
+
+  // User settings operations
+  getUserSettings(userId: string): Promise<UserSettings | undefined>;
+  upsertUserSettings(userId: string, settings: Partial<InsertUserSettings>): Promise<UserSettings>;
+
+  // Role switching
+  updateUserRole(userId: string, newRole: 'vendor' | 'couple' | 'individual'): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -481,6 +500,68 @@ export class DatabaseStorage implements IStorage {
     }
 
     throw new Error('Invalid user role for consumer profile update');
+  }
+
+  // Notification operations
+  async getNotifications(userId: string): Promise<Notification[]> {
+    return db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [newNotification] = await db
+      .insert(notifications)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  async markNotificationRead(notificationId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, notificationId));
+  }
+
+  async markAllNotificationsRead(userId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.userId, userId));
+  }
+
+  // User settings operations
+  async getUserSettings(userId: string): Promise<UserSettings | undefined> {
+    const [settings] = await db
+      .select()
+      .from(userSettings)
+      .where(eq(userSettings.userId, userId));
+    return settings;
+  }
+
+  async upsertUserSettings(userId: string, settings: Partial<InsertUserSettings>): Promise<UserSettings> {
+    const [upserted] = await db
+      .insert(userSettings)
+      .values({ userId, ...settings })
+      .onConflictDoUpdate({
+        target: userSettings.userId,
+        set: { ...settings, updatedAt: new Date() },
+      })
+      .returning();
+    return upserted;
+  }
+
+  // Role switching
+  async updateUserRole(userId: string, newRole: 'vendor' | 'couple' | 'individual'): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ role: newRole, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 }
 

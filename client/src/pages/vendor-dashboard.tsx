@@ -54,6 +54,17 @@ export default function VendorDashboard() {
     instagram: '',
     pinterest: ''
   });
+  const [newPackage, setNewPackage] = useState({
+    name: '',
+    description: '',
+    price: '',
+    duration: '',
+    features: ''
+  });
+  const [isPackageDialogOpen, setIsPackageDialogOpen] = useState(false);
+  const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<any>(null);
+  const [isPortfolioDialogOpen, setIsPortfolioDialogOpen] = useState(false);
+  const [inquiryFilter, setInquiryFilter] = useState('all');
 
   // Redirect if not authenticated or not a vendor
   useEffect(() => {
@@ -95,6 +106,11 @@ export default function VendorDashboard() {
 
   const { data: portfolio } = useQuery({
     queryKey: ["/api/portfolio"],
+    enabled: isAuthenticated && user?.role === 'vendor',
+  });
+
+  const { data: packages } = useQuery({
+    queryKey: ["/api/vendor-packages"],
     enabled: isAuthenticated && user?.role === 'vendor',
   });
 
@@ -181,6 +197,49 @@ export default function VendorDashboard() {
     },
   });
 
+  const createPackageMutation = useMutation({
+    mutationFn: async (packageData: any) => {
+      return apiRequest('POST', '/api/vendor-packages', packageData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Package Created",
+        description: "Your service package has been created successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/vendor-packages"] });
+      setIsPackageDialogOpen(false);
+      setNewPackage({ name: '', description: '', price: '', duration: '', features: '' });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create package.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deletePortfolioItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      return apiRequest('DELETE', `/api/portfolio/${itemId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Item Deleted",
+        description: "Portfolio item has been deleted.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/portfolio"] });
+      setIsPortfolioDialogOpen(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete portfolio item.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Handlers
   const handleGetUploadParameters = async () => {
     const response = await apiRequest('POST', '/api/objects/upload');
@@ -235,6 +294,25 @@ export default function VendorDashboard() {
     updateProfileMutation.mutate(vendorProfile);
   };
 
+  const handleCreatePackage = () => {
+    const features = newPackage.features.split(',').map(f => f.trim()).filter(f => f);
+    createPackageMutation.mutate({
+      ...newPackage,
+      price: parseFloat(newPackage.price),
+      features
+    });
+  };
+
+  const handleDeletePortfolioItem = (item: any) => {
+    deletePortfolioItemMutation.mutate(item.id);
+  };
+
+  const getFilteredInquiries = () => {
+    if (!inquiries || !Array.isArray(inquiries)) return [];
+    if (inquiryFilter === 'all') return inquiries;
+    return inquiries.filter((inquiry: any) => inquiry.status === inquiryFilter);
+  };
+
   const getAvailabilityForDate = (date: Date) => {
     if (!availability || !Array.isArray(availability)) return true;
     const dateStr = date.toDateString();
@@ -279,7 +357,7 @@ export default function VendorDashboard() {
 
         {/* Tabs Dashboard */}
         <Tabs defaultValue="inquiries" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="inquiries" className="flex items-center gap-2" data-testid="tab-inquiries">
               <Inbox className="w-4 h-4" />
               Inquiries
@@ -291,6 +369,10 @@ export default function VendorDashboard() {
             <TabsTrigger value="portfolio" className="flex items-center gap-2" data-testid="tab-portfolio">
               <Camera className="w-4 h-4" />
               Portfolio
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-2" data-testid="tab-services">
+              <DollarSign className="w-4 h-4" />
+              Services
             </TabsTrigger>
             <TabsTrigger value="profile" className="flex items-center gap-2" data-testid="tab-profile">
               <Edit className="w-4 h-4" />
@@ -304,15 +386,29 @@ export default function VendorDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Client Inquiries</span>
-                  <Badge variant="outline" data-testid="inquiries-count">
-                    {inquiries?.length || 0} Total
-                  </Badge>
+                  <div className="flex items-center gap-4">
+                    <Select value={inquiryFilter} onValueChange={setInquiryFilter}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="responded">Responded</SelectItem>
+                        <SelectItem value="accepted">Accepted</SelectItem>
+                        <SelectItem value="declined">Declined</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Badge variant="outline" data-testid="inquiries-count">
+                      {getFilteredInquiries().length} of {(inquiries as any)?.length || 0}
+                    </Badge>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {inquiries && Array.isArray(inquiries) && inquiries.length > 0 ? (
-                    inquiries.map((inquiry: any, index: number) => (
+                  {getFilteredInquiries().length > 0 ? (
+                    getFilteredInquiries().map((inquiry: any, index: number) => (
                       <Card key={inquiry.id} className="border border-blush" data-testid={`inquiry-${index}`}>
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-4">
@@ -558,6 +654,10 @@ export default function VendorDashboard() {
                                 variant="ghost" 
                                 size="sm"
                                 className="text-white hover:text-rose-gold mr-2"
+                                onClick={() => {
+                                  setSelectedPortfolioItem(item);
+                                  setIsPortfolioDialogOpen(true);
+                                }}
                                 data-testid={`button-edit-${index}`}
                               >
                                 <Edit className="w-4 h-4" />
@@ -566,6 +666,7 @@ export default function VendorDashboard() {
                                 variant="ghost" 
                                 size="sm"
                                 className="text-white hover:text-red-400"
+                                onClick={() => handleDeletePortfolioItem(item)}
                                 data-testid={`button-delete-${index}`}
                               >
                                 <Trash2 className="w-4 h-4" />

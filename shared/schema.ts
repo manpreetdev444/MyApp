@@ -31,7 +31,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  role: varchar("role", { enum: ['vendor', 'consumer'] }).notNull().default('consumer'),
+  role: varchar("role", { enum: ['vendor', 'couple', 'individual'] }).notNull().default('couple'),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -350,3 +350,61 @@ export type VendorAvailability = typeof vendorAvailability.$inferSelect;
 export type InsertVendorAvailability = z.infer<typeof insertVendorAvailabilitySchema>;
 export type SavedVendor = typeof savedVendors.$inferSelect;
 export type InsertSavedVendor = z.infer<typeof insertSavedVendorSchema>;
+
+// Notifications table for system notifications
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: varchar("type", { enum: ['inquiry_received', 'inquiry_response', 'booking_confirmed'] }).notNull(),
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
+  relatedId: varchar("related_id"), // Reference to inquiry, booking, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User settings table
+export const userSettings = pgTable("user_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  emailNotifications: boolean("email_notifications").default(true),
+  smsNotifications: boolean("sms_notifications").default(false),
+  marketingEmails: boolean("marketing_emails").default(true),
+  preferredLanguage: varchar("preferred_language").default('en'),
+  timezone: varchar("timezone").default('UTC'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Relations for notifications and settings
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
+}));
+
+// Insert schemas for new tables
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types for new tables
+export type Notification = typeof notifications.$inferSelect;
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;

@@ -28,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let roleData = null;
       if (user.role === 'vendor') {
         roleData = await storage.getVendorByUserId(userId);
-      } else if (user.role === 'consumer') {
+      } else if (user.role === 'couple' || user.role === 'individual') {
         roleData = await storage.getIndividualByUserId(userId);
       }
 
@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         const vendor = await storage.createVendor(vendorData);
         res.json({ success: true, profile: vendor });
-      } else if (role === 'consumer') {
+      } else if (role === 'couple' || role === 'individual') {
         const individualData = insertIndividualSchema.parse({
           userId,
           fullName: profileData.fullName || `${(req.user as any).claims.first_name} ${(req.user as any).claims.last_name}`,
@@ -463,7 +463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         const inquiries = await storage.getVendorInquiries(vendor.id);
         res.json(inquiries);
-      } else if (user.role === 'consumer') {
+      } else if (user.role === 'couple' || user.role === 'individual') {
         // For consumers, get their sent inquiries
         const inquiries = await storage.getConsumerInquiries(userId);
         res.json(inquiries);
@@ -770,6 +770,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating consumer profile:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Budget Items routes (new frontend expects these paths)
+  app.get('/api/budget-items', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const couple = await storage.getCoupleByUserId(userId);
+      
+      if (!couple) {
+        return res.status(404).json({ message: "Couple profile not found" });
+      }
+
+      const budgetItems = await storage.getBudgetItems(couple.id);
+      res.json(budgetItems);
+    } catch (error) {
+      console.error("Error fetching budget items:", error);
+      res.status(500).json({ message: "Failed to fetch budget items" });
+    }
+  });
+
+  app.post('/api/budget-items', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const couple = await storage.getCoupleByUserId(userId);
+      
+      if (!couple) {
+        return res.status(404).json({ message: "Couple profile not found" });
+      }
+
+      const budgetData = insertBudgetItemSchema.parse({
+        ...req.body,
+        coupleId: couple.id,
+      });
+      
+      const budgetItem = await storage.createBudgetItem(budgetData);
+      res.json(budgetItem);
+    } catch (error) {
+      console.error("Error creating budget item:", error);
+      res.status(500).json({ message: "Failed to create budget item" });
+    }
+  });
+
+  // Timeline Items routes (new frontend expects these paths)
+  app.get('/api/timeline-items', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const couple = await storage.getCoupleByUserId(userId);
+      
+      if (!couple) {
+        return res.status(404).json({ message: "Couple profile not found" });
+      }
+
+      const timelineItems = await storage.getTimelineItems(couple.id);
+      res.json(timelineItems);
+    } catch (error) {
+      console.error("Error fetching timeline items:", error);
+      res.status(500).json({ message: "Failed to fetch timeline items" });
+    }
+  });
+
+  app.post('/api/timeline-items', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const couple = await storage.getCoupleByUserId(userId);
+      
+      if (!couple) {
+        return res.status(404).json({ message: "Couple profile not found" });
+      }
+
+      const timelineData = insertTimelineItemSchema.parse({
+        ...req.body,
+        coupleId: couple.id,
+      });
+      
+      const timelineItem = await storage.createTimelineItem(timelineData);
+      res.json(timelineItem);
+    } catch (error) {
+      console.error("Error creating timeline item:", error);
+      res.status(500).json({ message: "Failed to create timeline item" });
+    }
+  });
+
+  // Portfolio management routes
+  app.put('/api/portfolio/:itemId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const { itemId } = req.params;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      const updates = req.body;
+      const portfolioItem = await storage.updatePortfolioItem(itemId, updates);
+      res.json(portfolioItem);
+    } catch (error) {
+      console.error("Error updating portfolio item:", error);
+      res.status(500).json({ message: "Failed to update portfolio item" });
+    }
+  });
+
+  app.delete('/api/portfolio/:itemId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const { itemId } = req.params;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      await storage.deletePortfolioItem(itemId);
+      res.json({ message: "Portfolio item deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting portfolio item:", error);
+      res.status(500).json({ message: "Failed to delete portfolio item" });
+    }
+  });
+
+  // Vendor packages routes
+  app.put('/api/vendor/packages/:packageId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const { packageId } = req.params;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      const updates = req.body;
+      const vendorPackage = await storage.updateVendorPackage(packageId, updates);
+      res.json(vendorPackage);
+    } catch (error) {
+      console.error("Error updating vendor package:", error);
+      res.status(500).json({ message: "Failed to update vendor package" });
+    }
+  });
+
+  app.delete('/api/vendor/packages/:packageId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const { packageId } = req.params;
+      const vendor = await storage.getVendorByUserId(userId);
+      
+      if (!vendor) {
+        return res.status(404).json({ message: "Vendor profile not found" });
+      }
+
+      await storage.deleteVendorPackage(packageId);
+      res.json({ message: "Vendor package deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting vendor package:", error);
+      res.status(500).json({ message: "Failed to delete vendor package" });
     }
   });
 
