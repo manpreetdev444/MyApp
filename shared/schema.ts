@@ -32,6 +32,9 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role", { enum: ['vendor', 'couple', 'individual'] }).notNull().default('couple'),
+  // Migration-ready fields for future auth provider support
+  authProvider: varchar("auth_provider").notNull().default('replit'),
+  providerId: varchar("provider_id"), // Provider-specific user ID
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

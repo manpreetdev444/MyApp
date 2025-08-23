@@ -853,25 +853,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Portfolio management routes
-  app.put('/api/portfolio/:itemId', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.user as any)?.claims?.sub;
-      const { itemId } = req.params;
-      const vendor = await storage.getVendorByUserId(userId);
-      
-      if (!vendor) {
-        return res.status(404).json({ message: "Vendor profile not found" });
-      }
-
-      const updates = req.body;
-      const portfolioItem = await storage.updatePortfolioItem(itemId, updates);
-      res.json(portfolioItem);
-    } catch (error) {
-      console.error("Error updating portfolio item:", error);
-      res.status(500).json({ message: "Failed to update portfolio item" });
-    }
-  });
+  // Portfolio management routes - Portfolio items are created/deleted, not updated
 
   app.delete('/api/portfolio/:itemId', isAuthenticated, async (req: any, res) => {
     try {

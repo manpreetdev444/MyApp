@@ -36,7 +36,7 @@ function Router() {
         <Route path="/" component={ProfileSetup} />
       ) : (
         <>
-          {user?.role === 'consumer' && <Route path="/" component={IndividualDashboard} />}
+          {(user?.role === 'couple' || user?.role === 'individual') && <Route path="/" component={ConsumerDashboard} />}
           {user?.role === 'vendor' && <Route path="/" component={VendorDashboard} />}
           <Route path="/consumer-dashboard" component={ConsumerDashboard} />
           <Route path="/vendor-dashboard" component={VendorDashboard} />

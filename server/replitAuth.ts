@@ -63,6 +63,8 @@ async function upsertUser(
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
+    authProvider: 'replit',
+    providerId: claims["sub"], // Store Replit user ID as providerId for future migration
   });
 }
 
@@ -102,8 +104,8 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    // Use the first domain from REPLIT_DOMAINS as the strategy name
-    const domain = process.env.REPLIT_DOMAINS!.split(",")[0];
+    // Use the current request hostname for strategy selection
+    const domain = req.hostname || process.env.REPLIT_DOMAINS!.split(",")[0];
     passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
@@ -111,8 +113,8 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    // Use the first domain from REPLIT_DOMAINS as the strategy name
-    const domain = process.env.REPLIT_DOMAINS!.split(",")[0];
+    // Use the current request hostname for strategy selection
+    const domain = req.hostname || process.env.REPLIT_DOMAINS!.split(",")[0];
     passport.authenticate(`replitauth:${domain}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
