@@ -104,7 +104,19 @@ export default function ConsumerDashboard() {
 
   // Queries
   const { data: vendors, refetch: refetchVendors } = useQuery({
-    queryKey: ["/api/vendors", { searchQuery, categoryFilter, locationFilter, budgetFilter }],
+    queryKey: ["/api/vendors", searchQuery, categoryFilter, locationFilter, budgetFilter],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (categoryFilter && categoryFilter !== 'all') params.append('category', categoryFilter);
+      if (locationFilter) params.append('location', locationFilter);
+      if (budgetFilter && budgetFilter !== 'any') params.append('budgetRange', budgetFilter);
+      
+      const url = `/api/vendors${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch vendors');
+      return response.json();
+    },
     enabled: isAuthenticated && user?.role !== 'vendor',
   });
 
@@ -431,7 +443,7 @@ export default function ConsumerDashboard() {
                           <SelectValue placeholder="All Categories" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All Categories</SelectItem>
+                          <SelectItem value="all">All Categories</SelectItem>
                           <SelectItem value="Photography">Photography</SelectItem>
                           <SelectItem value="Videography">Videography</SelectItem>
                           <SelectItem value="Catering">Catering</SelectItem>
@@ -462,7 +474,7 @@ export default function ConsumerDashboard() {
                           <SelectValue placeholder="Any Budget" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Any Budget</SelectItem>
+                          <SelectItem value="any">Any Budget</SelectItem>
                           <SelectItem value="0-1000">$0 - $1,000</SelectItem>
                           <SelectItem value="1000-2500">$1,000 - $2,500</SelectItem>
                           <SelectItem value="2500-5000">$2,500 - $5,000</SelectItem>
@@ -491,7 +503,7 @@ export default function ConsumerDashboard() {
                                 </Badge>
                                 <div className="flex items-center text-sm text-charcoal/60">
                                   <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 mr-1" />
-                                  {vendor.rating ? vendor.rating.toFixed(1) : 'New'}
+                                  {vendor.rating ? Number(vendor.rating).toFixed(1) : 'New'}
                                 </div>
                               </div>
                             </div>
@@ -1081,7 +1093,7 @@ export default function ConsumerDashboard() {
                         <div className="text-xs text-charcoal/60 flex items-center gap-2">
                           <Calendar className="w-3 h-3" />
                           {new Date(task.dueDate).toLocaleDateString()}
-                          <Badge size="sm" variant={task.priority === 'high' ? 'destructive' : 'default'}>
+                          <Badge variant={task.priority === 'high' ? 'destructive' : 'default'}>
                             {task.priority}
                           </Badge>
                         </div>
