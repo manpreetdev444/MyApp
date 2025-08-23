@@ -41,23 +41,31 @@ function Router() {
           
           {/* Protected consumer routes */}
           <Route path="/consumer-dashboard">
-            {!isAuthenticated ? (
-              (() => { window.location.href = '/api/login'; return <div>Redirecting to login...</div>; })()
-            ) : (user?.role === 'couple' || user?.role === 'individual') ? (
+            {(user?.role === 'couple' || user?.role === 'individual') ? (
               <ConsumerDashboard />
             ) : (
-              (() => { window.location.href = '/api/login'; return <div>Access denied. Redirecting...</div>; })()
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+                  <p className="text-gray-600 mb-4">You need consumer access to view this page.</p>
+                  <a href="/api/login" className="bg-rose-gold text-white px-4 py-2 rounded">Login</a>
+                </div>
+              </div>
             )}
           </Route>
           
           {/* Protected vendor routes */}
           <Route path="/vendor-dashboard">
-            {!isAuthenticated ? (
-              (() => { window.location.href = '/api/login'; return <div>Redirecting to login...</div>; })()
-            ) : user?.role === 'vendor' ? (
+            {user?.role === 'vendor' ? (
               <VendorDashboard />
             ) : (
-              (() => { window.location.href = '/api/login'; return <div>Access denied. Redirecting...</div>; })()
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+                  <p className="text-gray-600 mb-4">You need vendor access to view this page.</p>
+                  <a href="/api/login" className="bg-rose-gold text-white px-4 py-2 rounded">Login</a>
+                </div>
+              </div>
             )}
           </Route>
           
